@@ -1,0 +1,23 @@
+#home-box{
+    display: block;
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+}
+
+.home-button {
+    width: auto;
+    height: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border: none;
+    background-color: #528469;
+    font-size: 1.5em;
+    font-weight: 600;
+    font-family: inherit;
+    color: white;
+}
