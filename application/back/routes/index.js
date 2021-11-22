@@ -26,7 +26,7 @@ async function filter_request(states, years) {
     await session.close();
     await driver.close();
   }
-};
+}
 
 async function get_states() {
   let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
@@ -40,7 +40,7 @@ async function get_states() {
     await session.close();
     await driver.close();
   }
-};
+}
 
 async function get_years() {
   let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
@@ -54,7 +54,7 @@ async function get_years() {
     await session.close();
     await driver.close();
   }
-};
+}
 
 
 router.get('/', function(req, res) {
@@ -77,6 +77,7 @@ router.get('/filter', (req, res) => {
 router.get('/states', (req, res) => {
     get_states().then((records) => {
       let states = records.map((rec) => rec.get("state"));
+      states = states.sort()
       //console.log(states);
       res.send(states);
     });

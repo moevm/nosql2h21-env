@@ -1,4 +1,4 @@
-#columns-div {
+#states-div {
     position: absolute;
     top: 50px;
     left: 50%;
@@ -12,14 +12,14 @@
     text-align: center;
 }
 
-#columns-table {
+#states-table {
     margin: auto;
     border-collapse: collapse;
     text-align: left;
     font-size: 0.9em;
 }
 
-.columns-td {
+.states-td {
     padding: 10px;
 }
 

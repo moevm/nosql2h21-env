@@ -1,9 +1,9 @@
-#columns-div {
+#years-div {
     position: absolute;
     top: 50px;
     left: 50%;
     transform: translateX(-50%);
-    width: 800px;
+    width: 500px;
     height: auto;
     padding: 10px;
     display: block;
@@ -11,16 +11,3 @@
     border-width: 3px;
     text-align: center;
 }
-
-#columns-table {
-    margin: auto;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.9em;
-}
-
-.columns-td {
-    padding: 10px;
-}
-
-

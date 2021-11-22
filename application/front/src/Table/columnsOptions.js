@@ -29,7 +29,7 @@ export const columnsMap = {
     aqi_CO: 'AQI CO',
 }
 
-export const columns = [
+export const columnsLabels = [
     { value: 'state_code', label: columnsMap.state_code },
     { value: 'county_code', label: columnsMap.county_code },
     { value: 'site_num', label: columnsMap.site_num },

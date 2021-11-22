@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { columns } from '../columnsOptions'
+import { columnsLabels } from '../columnsOptions'
 import './TableColumnsWindow.css';
 
 
@@ -9,12 +9,13 @@ class TableColumnsWindow extends Component {
         this.state = {
             columns: props.columns
         }
+        // this.columns = props.columns
     }
 
     updateColumnsState(event) {
         let columns = this.state.columns
         columns[event.target.value] = event.target.checked
-        this.setState({columns})
+        this.setState({columns: columns})
     }
 
     render() {
@@ -24,12 +25,12 @@ class TableColumnsWindow extends Component {
                 <table id='columns-table'>
                     <tbody>
                         <tr>
-                            {columns.slice(0, 3).map((option) => {
+                            {columnsLabels.slice(0, 3).map((option) => {
                                 return (
                                     <td className={'columns-td'}>
                                         <label>
                                             <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                                   onClick={(event) => this.updateColumnsState(event)}/>
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
                                             {option.label}
                                         </label>
                                     </td>
@@ -38,68 +39,12 @@ class TableColumnsWindow extends Component {
                         </tr>
 
                         <tr>
-                        {columns.slice(3, 7).map((option) => {
-                            return (
-                                <td className={'columns-td'}>
-                                    <label>
-                                        <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                               onClick={(event) => this.updateColumnsState(event)}/>
-                                        {option.label}
-                                    </label>
-                                </td>
-                            )
-                        })}
-                        </tr>
-
-                        <tr>
-                        {columns.slice(7, 8).map((option) => {
-                            return (
-                                <td className={'columns-td'}>
-                                    <label>
-                                        <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                               onClick={(event) => this.updateColumnsState(event)}/>
-                                        {option.label}
-                                    </label>
-                                </td>
-                            )
-                        })}
-                        </tr>
-
-                        <tr>
-                        {columns.slice(8, 13).map((option) => {
-                            return (
-                                <td className={'columns-td'}>
-                                    <label>
-                                        <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                               onClick={(event) => this.updateColumnsState(event)}/>
-                                        {option.label}
-                                    </label>
-                                </td>
-                            )
-                        })}
-                        </tr>
-
-                        <tr>
-                        {columns.slice(13, 18).map((option) => {
-                            return (
-                                <td className={'columns-td'}>
-                                    <label>
-                                        <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                               onClick={(event) => this.updateColumnsState(event)}/>
-                                        {option.label}
-                                    </label>
-                                </td>
-                            )
-                        })}
-                        </tr>
-
-                        <tr>
-                            {columns.slice(18, 23).map((option) => {
+                            {columnsLabels.slice(3, 7).map((option) => {
                                 return (
                                     <td className={'columns-td'}>
                                         <label>
                                             <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
-                                                   onClick={(event) => this.updateColumnsState(event)}/>
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
                                             {option.label}
                                         </label>
                                     </td>
@@ -108,11 +53,68 @@ class TableColumnsWindow extends Component {
                         </tr>
 
                         <tr>
-                            {columns.slice(23, 28).map((option) => {
+                            {columnsLabels.slice(7, 8).map((option) => {
                                 return (
                                     <td className={'columns-td'}>
                                         <label>
-                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}/>
+                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
+                                            {option.label}
+                                        </label>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+
+                        <tr>
+                            {columnsLabels.slice(8, 13).map((option) => {
+                                return (
+                                    <td className={'columns-td'}>
+                                        <label>
+                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
+                                            {option.label}
+                                        </label>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+
+                        <tr>
+                            {columnsLabels.slice(13, 18).map((option) => {
+                                return (
+                                    <td className={'columns-td'}>
+                                        <label>
+                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
+                                            {option.label}
+                                        </label>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+
+                        <tr>
+                            {columnsLabels.slice(18, 23).map((option) => {
+                                return (
+                                    <td className={'columns-td'}>
+                                        <label>
+                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
+                                            {option.label}
+                                        </label>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+
+                        <tr>
+                            {columnsLabels.slice(23, 28).map((option) => {
+                                return (
+                                    <td className={'columns-td'}>
+                                        <label>
+                                            <input type='checkbox' value={option.value} checked={this.state.columns[option.value]}
+                                                   onChange={(event) => this.updateColumnsState(event)}/>
                                             {option.label}
                                         </label>
                                     </td>

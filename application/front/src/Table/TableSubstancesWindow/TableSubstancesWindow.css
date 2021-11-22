@@ -1,9 +1,9 @@
-#columns-div {
+#substances-div {
     position: absolute;
     top: 50px;
     left: 50%;
     transform: translateX(-50%);
-    width: 800px;
+    width: 500px;
     height: auto;
     padding: 10px;
     display: block;
@@ -12,14 +12,18 @@
     text-align: center;
 }
 
-#columns-table {
+#substances-table {
     margin: auto;
     border-collapse: collapse;
     text-align: left;
-    font-size: 0.9em;
+    font-size: 1.2em;
 }
 
-.columns-td {
+.substances-td {
+    padding: 10px;
+}
+
+.substances-label {
     padding: 10px;
 }
 
