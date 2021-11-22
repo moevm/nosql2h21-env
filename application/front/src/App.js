@@ -29,7 +29,9 @@ class App extends Component {
         return (
             <div>
                 <div id='site-header' role='banner'>
-                    <img src={house} id='house' onMouseDown={this.house_button_clicked} alt='home'/>
+                    <div id={'house-frame'}>
+                        <img src={house} id='house' onMouseDown={this.house_button_clicked} alt='home'/>
+                    </div>
                     <button className={'site-header__button'}>Карта</button>
                     <button className={'site-header__button'}>Статистика</button>
                     <button className={'site-header__button'} onMouseDown={this.table_button_clicked}>Таблица</button>

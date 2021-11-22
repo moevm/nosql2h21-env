@@ -9,8 +9,12 @@
   font-weight: 600;
 }
 
+#house-frame {
+  float: left;
+}
+
 #house {
-  height: 60px;
+  height: 56px;
 }
 
 .site-header__button {
