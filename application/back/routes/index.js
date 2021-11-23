@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 let neo4j = require('neo4j-driver');
-let creds = require("../credentials.json");
+let creds = require("./extras/credentials.json");
+
+let db_info = require("./extras/db_info");
 
 async function filter_request(states, years) {
   // states = ['California', 'Arizona']
@@ -28,35 +30,6 @@ async function filter_request(states, years) {
   }
 }
 
-async function get_states() {
-  let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
-  let session = driver.session();
-  try {
-      let res = await session.run("MATCH (location:Address) RETURN DISTINCT location.state as state", {});
-      return res.records;
-  } catch (e) {
-    console.log(e);
-  } finally {
-    await session.close();
-    await driver.close();
-  }
-}
-
-async function get_years() {
-  let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
-  let session = driver.session();
-  try {
-      let res = await session.run("MATCH (date:Date) RETURN max(date.year) as max_year, min(date.year) as min_year", {});
-      return res.records;
-  } catch (e) {
-    console.log(e);
-  } finally {
-    await session.close();
-    await driver.close();
-  }
-}
-
-
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
@@ -75,7 +48,7 @@ router.get('/filter', (req, res) => {
 });
 
 router.get('/states', (req, res) => {
-    get_states().then((records) => {
+  db_info.get_states().then((records) => {
       let states = records.map((rec) => rec.get("state"));
       states = states.sort()
       //console.log(states);
@@ -84,7 +57,7 @@ router.get('/states', (req, res) => {
 });
 
 router.get('/years', (req, res) => {
-  get_years().then((records) => {
+  db_info.get_years().then((records) => {
     let year_range = {
       min: records[0].get("min_year").toInt(),
       max: records[0].get("max_year").toInt()
