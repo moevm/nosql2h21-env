@@ -15,10 +15,10 @@ async function get_hist_data(substance, interval) {
             let session = driver.session();
             try {
                 let res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
-                WHERE location.state = $state AND date.year = $min_year \
+                WHERE location.state = $state AND date.year >= $min_year AND date.year <= $max_year \
                 RETURN location.state AS state, \
                 avg(toFloat(observation.mean_${substance})) AS mean`, 
-                {state: state, min_year: interval.min});
+                {state: state, min_year: interval.min, max_year: interval.max});
                 if (res.records.length > 0) {
                     hist_data[state] = res.records[0].get("mean");
                 }
@@ -34,7 +34,72 @@ async function get_hist_data(substance, interval) {
     return hist_data;
 }
 
+async function get_plot_data(state, substance, interval) {
+    // return an object {month-year: conc}
+    let driver = neo4j.driver("bolt://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let plot_data = {};
+    for (let year = interval.min; year <= interval.max; year++) {
+        for (let month = 1; month <= 12; month++) {
+            let session = driver.session();
+            try {
+                let res;
+                if (state === "WHOLE COUNTRY") {
+                    res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+                    WHERE date.year = $year AND date(date.date_local).month = $month \
+                    RETURN avg(toFloat(observation.mean_${substance})) AS mean`, 
+                    {year: year, month: month});
+                } else {
+                    res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+                    WHERE location.state = $state AND date.year = $year AND date(date.date_local).month = $month \
+                    RETURN avg(toFloat(observation.mean_${substance})) AS mean`, 
+                    {state: state, year: year, month: month});
+                }
+                if (res.records.length > 0) {
+                    plot_data[`${year}-${month}`] = res.records[0].get("mean");
+                }
+            } catch(e) { 
+                console.log(e); 
+            } finally { 
+                await session.close(); 
+            }
+        }
+    }
+    console.log(plot_data);
+    await driver.close();
+    return plot_data;
+}
+
 router.get("/plots", (req, res) => {
+    // x: time
+    // y: concentration
+    // avg: months
+    // var: state (SEPARATE FOR THE WHOLE COUNTRY), substance, interval
+    if (!req.body) {
+        res.status(400);
+        res.json({message: "Bad Request"});
+    }
+    let substance = req.body.substance || "NO2";
+    let interval = req.body.interval;
+    let state = req.body.state || "WHOLE COUNTRY";
+    if (!interval) {
+        db_info.get_years().then((records) => {
+            interval = {
+                min: records[0].get("min_year").toInt(),
+                max: records[0].get("max_year").toInt()
+            };
+            get_plot_data(state, substance, interval).then((plot_data) => {
+                console.log(plot_data);
+                res.send(plot_data);
+            });
+        });
+        return;    
+    }
+    //console.log(substance);
+    //console.log(interval);
+    get_plot_data(state, substance, interval).then((plot_data) => {
+        console.log(plot_data);
+        res.send(plot_data);
+    });
 });
 
 router.get("/hist", (req, res) => {
