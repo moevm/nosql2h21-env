@@ -9,6 +9,7 @@ let db_info = require("./extras/db_info");
 async function filter_request(states, years) {
   // states = ['California', 'Arizona']
   // years = [2000, 2001]
+  console.log("Enter filter!");
   let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
   let session = driver.session();
   try {
@@ -30,6 +31,39 @@ async function filter_request(states, years) {
   }
 }
 
+async function map_request(substance, interval) {
+    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let session = driver.session();
+    let zero = 0;
+    try {
+        let res;
+        if (!!substance) {
+            res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+            WHERE date.year >= $min_year AND date.year <= $max_year \
+            RETURN location.state AS state, \
+            avg(toFloat(observation.mean_${substance})) AS mean`,
+                {min_year: interval.min, max_year: interval.max});
+            return res.records;
+
+        } else {
+            res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+            WHERE date.year >= $min_year AND date.year <= $max_year \
+            RETURN location.state AS state, \
+            avg(toFloat(${zero})) AS mean`,
+                {min_year: interval.min, max_year: interval.max, zero: zero});
+            return res.records;
+        }
+    }
+    catch (e) {
+        console.log(e);
+    } finally {
+        await session.close();
+        await driver.close();
+    }
+}
+
+
+
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
@@ -45,6 +79,29 @@ router.get('/filter', (req, res) => {
       res.send(records[0].toObject()); // to change
     });
   //}
+});
+
+router.get('/map', (req, res) => {
+   if (!req.body) {
+        res.status(400);
+        res.json({message: "Bad Request"});
+    }
+    else {
+    let substance = req.body.substance || "O3";
+    let interval = req.body.interval;
+    if (!interval) {
+        db_info.get_years().then((records) => {
+            interval = {
+                min: records[0].get("min_year").toInt(),
+                max: records[0].get("max_year").toInt()
+            };
+            map_request(substance, interval).then((records) => {
+                res.send(records);
+            });
+        });
+        return;
+    }
+    }
 });
 
 router.get('/states', (req, res) => {
