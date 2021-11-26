@@ -7,9 +7,7 @@ let creds = require("./extras/credentials.json");
 let db_info = require("./extras/db_info");
 
 async function filter_request(states, years) {
-  // states = ['California', 'Arizona']
-  // years = [2000, 2001]
-  console.log("Enter filter!");
+
   let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
   let session = driver.session();
   try {
@@ -32,37 +30,46 @@ async function filter_request(states, years) {
 }
 
 async function map_request(substance, interval) {
+    let map_data = db_info.get_states().then(async (records) => {
     let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
-    let session = driver.session();
+    let map_data = {};
     let zero = 0;
-    try {
-        let res;
-        if (!!substance) {
-            res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
-            WHERE date.year >= $min_year AND date.year <= $max_year \
-            RETURN location.state AS state, \
-            avg(toFloat(observation.mean_${substance})) AS mean`,
-                {min_year: interval.min, max_year: interval.max});
-            return res.records;
+    for (let record of records) {
+        let state = record.get("state");
+        let session = driver.session();
+        try {
+            if (!!substance) {
+                let res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+                WHERE location.state = $state AND date.year >= $min_year AND date.year <= $max_year \
+                RETURN location.state AS state, \
+                avg(toFloat(observation.mean_${substance})) AS mean`,
+                    {state: state, min_year: interval.min, max_year: interval.max});
+                if (res.records.length > 0) {
+                    map_data[state] = res.records[0].get("mean");
+                }
 
-        } else {
-            res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
-            WHERE date.year >= $min_year AND date.year <= $max_year \
-            RETURN location.state AS state, \
-            avg(toFloat(${zero})) AS mean`,
-                {min_year: interval.min, max_year: interval.max, zero: zero});
-            return res.records;
+            } else {
+                let res = await session.run(`MATCH (location:Address)-[observation]->(date:Date) \
+                WHERE location.state = $state AND date.year >= $min_year AND date.year <= $max_year \
+                RETURN location.state AS state, \
+                avg(toFloat(${zero})) AS mean`,
+                    {state: state, min_year: interval.min, max_year: interval.max});
+                if (res.records.length > 0) {
+                    map_data[state] = res.records[0].get("mean");
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            await session.close();
+            //await driver.close();
         }
     }
-    catch (e) {
-        console.log(e);
-    } finally {
-        await session.close();
-        await driver.close();
-    }
+    await driver.close();
+    return map_data;
+    });
+    return map_data;
 }
-
-
 
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
@@ -95,8 +102,8 @@ router.get('/map', (req, res) => {
                 min: records[0].get("min_year").toInt(),
                 max: records[0].get("max_year").toInt()
             };
-            map_request(substance, interval).then((records) => {
-                res.send(records);
+            map_request(substance, interval).then((map_data) => {
+                res.send(map_data);
             });
         });
         return;
@@ -122,6 +129,13 @@ router.get('/years', (req, res) => {
     //console.log(year_range);
     res.send(year_range);
   });
+});
+
+
+router.get('/location', (req, res) => {
+    db_info.get_states_location().then((location) => {
+        res.send(location);
+    });
 });
 
 
