@@ -93,8 +93,8 @@ router.get('/filter', (req, res) => {
           // page is number of page in table
           // and lines is number of lines on the page
           // there is no control over pages and lines being out of rage
-          let page = req.body.page || 100;
-          let lines = req.body.lines || 1;
+          let page = req.body.page || 0;
+          let lines = req.body.lines || 100;
           let interval = req.body.interval;
           if (!interval) {
               db_info.get_years().then((records) => {
@@ -103,7 +103,7 @@ router.get('/filter', (req, res) => {
                       max: records[0].get("max_year").toInt()
                   };
                   filter_request(states, interval, page, lines).then((records) => {
-                      res.send(records); // to change
+                      res.send(records.map(({ _fieldLookup }) => _fieldLookup)); // to change
                   });
               });
           }

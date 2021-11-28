@@ -55,6 +55,7 @@ class Table extends Component {
                 aqi_CO: true
             },
 
+            data: []
         }
 
         this.substances =  [
@@ -72,6 +73,11 @@ class Table extends Component {
     }
 
     componentDidMount() {
+        $.get('filter', {states: this.states, interval: this.interval, page: undefined, lines: undefined}, (res) => {
+            console.log(res)
+            this.setState({data: this.state.data.concat(res)})
+        })
+
         $.get('states', {}, (res) => {
             let states = []
             res.forEach((value) => {
@@ -151,6 +157,9 @@ class Table extends Component {
                             <table id='data-table' className={'table-border-none'}>
                                 <tbody>
                                     {this.get_line()}
+                                    {this.state.data.map((observation) => {
+                                        return this.get_line(observation)
+                                    })}
                                 </tbody>
                             </table>
                         </div>

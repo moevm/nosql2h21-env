@@ -1,13 +1,13 @@
 let neo4j = require('neo4j-driver');
 let creds = require("./credentials.json");
-var env = require('node-env-file');
-env(__dirname + '/.env');
-// YOU HAVE TO CREATE .env file in current directory with following content:
-//NEO4J_PROTOCOL=http
-// NEO4J_HOST=127.0.0.1
-// NEO4J_PORT=7474
-// NEO4J_USERNAME=neo4j
-// NEO4J_PASSWORD=your neo4j password
+// var env = require('node-env-file');
+// env(__dirname + '/.env');
+// // YOU HAVE TO CREATE .env file in current directory with following content:
+// //NEO4J_PROTOCOL=http
+// // NEO4J_HOST=127.0.0.1
+// // NEO4J_PORT=7474
+// // NEO4J_USERNAME=neo4j
+// // NEO4J_PASSWORD=your neo4j password
 let apoc = require('apoc');
 
 
