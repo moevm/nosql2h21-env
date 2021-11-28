@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import TableColumnsWindow from "./TableColumnsWindow/TableColumnsWindow";
 import TableStatesWindow from "./TableStatesWindow/TableStatesWindow";
 import TableYearsWindow from "./TableYearsWindow/TableYearsWindow";
-import { columnsMap } from './columnsOptions'
+import InfiniteScroll from 'react-infinite-scroll-component';
+import {columnsMap} from './columnsOptions'
 import './Table.css';
 import $ from "jquery"
-
 
 
 export const PAGE_STATUS = {
@@ -53,13 +53,18 @@ class Table extends Component {
                 aqi_CO: true
             },
 
-            data: []
+            data: ['header'],
+            hasMore: true
         }
+
+        this.page = 0
+        this.lines = 100
 
         this.close_columns_window = this.close_columns_window.bind(this)
         this.close_states_window = this.close_states_window.bind(this)
         this.close_years_window = this.close_years_window.bind(this)
         this.get_line = this.get_line.bind(this)
+        this.fetch_data = this.fetch_data.bind(this)
     }
 
     componentDidMount() {
@@ -100,9 +105,14 @@ class Table extends Component {
             }
         }
 
-        $.get('filter', {states: states, interval: interval, page: undefined, lines: undefined}, (res) => {
+        $.get('filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
             this.setState({data: this.state.data.concat(res)})
         })
+    }
+
+    fetch_data() {
+        this.page += 1
+        this.filter()
     }
 
     set_page_state(status) {
@@ -140,13 +150,27 @@ class Table extends Component {
         this.set_page_state(PAGE_STATUS.DISPLAY)
     }
 
-    get_line(line) {
+    get_header() {
         return (
-            <tr className={'data-tr'}>
+            <tr id={'table-header'}>
                 {Object.keys(this.state.columns).map((name, index) => {
                     if (this.state.columns[name]) {
                         let value;
-                        if (line) {
+                        value = columnsMap[name]
+                        return <th className={'data-th'} key={index}>{value}</th>
+                    }
+                })}
+            </tr>
+        )
+    }
+
+    get_line(line) {
+        return (
+            <tr className={'table-line'}>
+                {Object.keys(this.state.columns).map((name, index) => {
+                    if (this.state.columns[name]) {
+                        let value;
+                        if (typeof line === 'object') {
                             value = line[name]
                             return <td className={'data-td'} key={index}>{value}</td>
                         }
@@ -170,10 +194,13 @@ class Table extends Component {
                         <div id='table-box-left__inner'>
                             <table id='data-table' className={'table-border-none'}>
                                 <tbody>
-                                    {this.get_line()}
-                                    {this.state.data.map((observation) => {
-                                        return this.get_line(observation)
-                                    })}
+                                    <InfiniteScroll next={this.fetch_data}
+                                                    hasMore={this.state.hasMore}
+                                                    loader={<h3>Loading...</h3>}
+                                                    dataLength={this.state.data.length}
+                                                    scrollableTarget={'table-box-left__inner'}>
+                                        {this.state.data.map((observation) => this.get_line(observation))}
+                                    </InfiniteScroll>
                                 </tbody>
                             </table>
                         </div>
