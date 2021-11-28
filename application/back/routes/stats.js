@@ -64,72 +64,69 @@ async function get_plot_data(state, substance, interval) {
             }
         }
     }
-    console.log(plot_data);
+
+    // console.log(plot_data);
     await driver.close();
     return plot_data;
 }
 
-router.get("/plots", (req, res) => {
+router.get("/plots", async (req, res) => {
     // x: time
     // y: concentration
     // avg: months
     // var: state (SEPARATE FOR THE WHOLE COUNTRY), substance, interval
-    if (!req.body) {
-        res.status(400);
-        res.json({message: "Bad Request"});
-    }
-    let substance = req.body.substance || "NO2";
-    let interval = req.body.interval;
-    let state = req.body.state || "WHOLE COUNTRY";
+
+    let state = req.query.state || "WHOLE COUNTRY";
+    let substance = req.query.substance || "NO2";
+    let interval = req.query.interval;
+
     if (!interval) {
-        db_info.get_years().then((records) => {
+        await db_info.get_years().then((records) => {
             interval = {
                 min: records[0].get("min_year").toInt(),
                 max: records[0].get("max_year").toInt()
             };
-            get_plot_data(state, substance, interval).then((plot_data) => {
-                console.log(plot_data);
-                res.send(plot_data);
-            });
         });
-        return;    
     }
-    //console.log(substance);
-    //console.log(interval);
+    else {
+        interval = {
+            min: +interval.min,
+            max: +interval.max
+        }
+    }
+
     get_plot_data(state, substance, interval).then((plot_data) => {
         console.log(plot_data);
         res.send(plot_data);
     });
 });
 
-router.get("/hist", (req, res) => {
+router.get("/hist", async (req, res) => {
     // x: state
     // y: concentration
     // avg: all locations in each state, on a chosen time interval
     // var: substance, time
-    if (!req.body) {
-        res.status(400);
-        res.json({message: "Bad Request"});
-    }
-    let substance = req.body.substance || "NO2";
-    let interval = req.body.interval;
+
+    let substance = req.query.substance || "NO2";
+    let interval = req.query.interval;
+
     if (!interval) {
-        db_info.get_years().then((records) => {
+        await db_info.get_years().then((records) => {
             interval = {
                 min: records[0].get("min_year").toInt(),
                 max: records[0].get("max_year").toInt()
             };
-            get_hist_data(substance, interval).then((hist_data) => {
-                console.log(hist_data);
-                res.send(hist_data);
-            });
         });
-        return;    
     }
-    //console.log(substance);
-    //console.log(interval);
+    else {
+        interval = {
+            min: +interval.min,
+            max: +interval.max
+        }
+    }
+
     get_hist_data(substance, interval).then((hist_data) => {
-        console.log(hist_data);
+        // console.log(hist_data);
         res.send(hist_data);
     });
 });

@@ -6,7 +6,7 @@ import './TableYearsWindow.css';
 class TableYearsWindow extends Component {
     constructor(props) {
         super(props);
-        this.years = props.years
+        this.years = JSON.parse(JSON.stringify(props.years))
     }
 
     updateYears(min, max) {

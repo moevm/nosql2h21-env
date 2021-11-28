@@ -6,7 +6,7 @@ class TableStatesWindow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            states: props.states
+            states: JSON.parse(JSON.stringify(props.states))
         }
     }
 

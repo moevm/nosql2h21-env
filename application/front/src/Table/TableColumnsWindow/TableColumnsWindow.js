@@ -7,9 +7,8 @@ class TableColumnsWindow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            columns: props.columns
+            columns: JSON.parse(JSON.stringify(props.columns))
         }
-        // this.columns = props.columns
     }
 
     updateColumnsState(event) {
