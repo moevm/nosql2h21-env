@@ -103,7 +103,15 @@ router.get('/filter', (req, res) => {
                       max: records[0].get("max_year").toInt()
                   };
                   filter_request(states, interval, page, lines).then((records) => {
-                      res.send(records.map((rec) => rec.toObject()));
+                        res.send(records.map((rec) => {
+                            obj_rec = rec.toObject();
+                            for (let key in obj_rec) {
+                                if (neo4j.isInt(obj_rec[key])) {
+                                    obj_rec[key] = obj_rec[key].toInt();
+                                }
+                            }
+                            return obj_rec;
+                        }));
                   });
               });
           }
