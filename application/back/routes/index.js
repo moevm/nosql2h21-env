@@ -103,7 +103,7 @@ router.get('/filter', (req, res) => {
                       max: records[0].get("max_year").toInt()
                   };
                   filter_request(states, interval, page, lines).then((records) => {
-                      res.send(records.map(({ _fieldLookup }) => _fieldLookup)); // to change
+                      res.send(records.map((rec) => rec.toObject()));
                   });
               });
           }
