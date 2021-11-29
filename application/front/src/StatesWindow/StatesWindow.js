@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import './TableStatesWindow.css';
+import './StatesWindow.css';
 
 
-class TableStatesWindow extends Component {
+class StatesWindow extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -65,4 +65,4 @@ class TableStatesWindow extends Component {
     };
 }
 
-export default TableStatesWindow;
+export default StatesWindow;

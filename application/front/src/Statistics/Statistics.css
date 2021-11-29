@@ -9,7 +9,7 @@
     /*padding: 100px 140px 100px 20px;*/
     /*font-size: 1.2em;*/
     float: right;
-    width: 15%;
+    width: 20%;
     font-size: 1.2em;
 }
 
@@ -23,6 +23,9 @@
 }
 
 .statistics-radio-box {
+    width: 80%;
+    align-content: center;
+    align-items: center;
     margin: 50px 0;
     padding: 10px;
 }
@@ -33,4 +36,12 @@
 
 .statistics-radio-wrapper {
     margin: 10px auto;
+}
+
+.statistics-states-button {
+    width: 200px;
+    margin: 5px 5%;
+    border-radius: 12px 0 4px 0;;
+    background-color: white;
+    font-size: 0.8em;
 }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import TableColumnsWindow from "./TableColumnsWindow/TableColumnsWindow";
-import TableStatesWindow from "./TableStatesWindow/TableStatesWindow";
+import StatesWindow from "../StatesWindow/StatesWindow";
 import TableYearsWindow from "./TableYearsWindow/TableYearsWindow";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {columnsMap} from './columnsOptions'
@@ -8,7 +8,7 @@ import './Table.css';
 import $ from "jquery"
 
 
-export const PAGE_STATUS = {
+const TABLE_PAGE_STATUS = {
     DISPLAY: 0,
     COLUMNS: 1,
     STATES: 2,
@@ -20,7 +20,7 @@ class Table extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            status: PAGE_STATUS.DISPLAY,
+            status: TABLE_PAGE_STATUS.DISPLAY,
 
             columns: {
                 state_code: true,
@@ -125,7 +125,7 @@ class Table extends Component {
                 this.setState({columns: columns})
             }
         }
-        this.set_page_state(PAGE_STATUS.DISPLAY)
+        this.set_page_state(TABLE_PAGE_STATUS.DISPLAY)
     }
 
     close_states_window(states) {
@@ -136,7 +136,7 @@ class Table extends Component {
                 this.filter()
             }
         }
-        this.set_page_state(PAGE_STATUS.DISPLAY)
+        this.set_page_state(TABLE_PAGE_STATUS.DISPLAY)
     }
 
     close_years_window(years) {
@@ -147,7 +147,7 @@ class Table extends Component {
                 this.filter()
             }
         }
-        this.set_page_state(PAGE_STATUS.DISPLAY)
+        this.set_page_state(TABLE_PAGE_STATUS.DISPLAY)
     }
 
     get_line(line) {
@@ -173,7 +173,7 @@ class Table extends Component {
     render() {
         let content;
 
-        if (this.state.status === PAGE_STATUS.DISPLAY) {
+        if (this.state.status === TABLE_PAGE_STATUS.DISPLAY) {
             content = (
                 <div id='table-box'>
                     <div id='table-box-left'>
@@ -193,25 +193,25 @@ class Table extends Component {
                     </div>
                     <div id='table-box-right'>
                         <button className={'table-box-right__button'}
-                                onClick={() => this.set_page_state(PAGE_STATUS.COLUMNS)}>Выбор колонок</button>
+                                onClick={() => this.set_page_state(TABLE_PAGE_STATUS.COLUMNS)}>Выбор колонок</button>
                         <br/>
                         <br/>
                         <button className={'table-box-right__button'}
-                                onClick={() => this.set_page_state(PAGE_STATUS.STATES)}>Выбор штатов</button>
+                                onClick={() => this.set_page_state(TABLE_PAGE_STATUS.STATES)}>Выбор штатов</button>
                         <br/>
                         <button className={'table-box-right__button'}
-                                onClick={() => this.set_page_state(PAGE_STATUS.YEARS)}>Выбор годов</button>
+                                onClick={() => this.set_page_state(TABLE_PAGE_STATUS.YEARS)}>Выбор годов</button>
                     </div>
                 </div>
             )
         }
-        else if (this.state.status === PAGE_STATUS.COLUMNS) {
+        else if (this.state.status === TABLE_PAGE_STATUS.COLUMNS) {
             content = <TableColumnsWindow columns={this.state.columns} callback={this.close_columns_window}/>
         }
-        else if (this.state.status === PAGE_STATUS.STATES) {
-            content = <TableStatesWindow states={this.states} callback={this.close_states_window}/>
+        else if (this.state.status === TABLE_PAGE_STATUS.STATES) {
+            content = <StatesWindow states={this.states} callback={this.close_states_window}/>
         }
-        else if (this.state.status === PAGE_STATUS.YEARS) {
+        else if (this.state.status === TABLE_PAGE_STATUS.YEARS) {
             content = <TableYearsWindow years={this.years} callback={this.close_years_window}/>
         }
 

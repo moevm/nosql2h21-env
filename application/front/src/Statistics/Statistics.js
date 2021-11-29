@@ -25,7 +25,9 @@ class Statistics extends Component {
             types: {
                 dot: true,
                 histogram: false
-            }
+            },
+
+            states: []
         }
 
         this.years = {
@@ -40,11 +42,11 @@ class Statistics extends Component {
 
     componentDidMount() {
         $.get('/states', {}, (res) => {
-            let states = []
+            let states = ['WHOLE COUNTRY']
             res.forEach((value) => {
-                states.push({name: value, check: true})
+                states.push(value)
             })
-            this.states = states
+            this.setState({states: states})
         })
 
         $.get('/years', {}, (res) => {
@@ -156,6 +158,10 @@ class Statistics extends Component {
         }
     }
 
+    updateLocation(event) {
+        this.location = event.target.value
+    }
+
     render() {
         return (
             <div>
@@ -204,6 +210,14 @@ class Statistics extends Component {
                                 </div>
                             )
                         })}
+                    </div>
+
+                    <div className={'statistics-radio-box'}>
+                        <select onChange={(e) => {this.updateLocation(e)}}>
+                            {this.state.states.map((state) => {
+                                return <option value={state}>{state}</option>
+                            })}
+                        </select>
                     </div>
                 </div>
             </div>
