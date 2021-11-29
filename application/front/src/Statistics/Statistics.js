@@ -35,16 +35,51 @@ class Statistics extends Component {
             current_max: 0,
         }
 
-        this.location = "Arizona";
+        this.location = "WHOLE COUNTRY";
     }
 
     componentDidMount() {
+        $.get('/states', {}, (res) => {
+            let states = []
+            res.forEach((value) => {
+                states.push({name: value, check: true})
+            })
+            this.states = states
+        })
+
         $.get('/years', {}, (res) => {
             let years = res
             years.current_min = years.min
             years.current_max = years.max
             this.years = years
             this.forceUpdate()
+        })
+    }
+
+    get_plots_data() {
+        let interval = this.years
+        if (interval !== undefined) {
+            interval = {
+                min: interval.current_min,
+                max: interval.current_max
+            }
+        }
+        let substance;
+        for (const key in this.state.substances) {
+            if (this.state.substances[key]) {
+                substance = key;
+                break;
+            }
+        }
+        let location = this.location;
+
+
+        $.get('/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
+            let str_res = ""
+            for (const key in res) {
+                str_res += `<p>${key}: ${res[key]}</p>`
+            }
+            $("#statistics-container").html(str_res);
         })
     }
 
@@ -76,7 +111,9 @@ class Statistics extends Component {
     updateYears(current_min, current_max) {
         this.years.current_min = current_min
         this.years.current_max = current_max
-        if (this.state.types.dot) {} else {
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        } else {
             this.get_hist_data()
         }
     }
@@ -94,7 +131,9 @@ class Statistics extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
-        if (this.state.types.dot) {} else {
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        } else {
             this.get_hist_data()
         }
     }
@@ -110,7 +149,9 @@ class Statistics extends Component {
         }
         types[event.target.value] = true
         this.setState({types: types})
-        if (types.dot) {} else {
+        if (types.dot) {
+            this.get_plots_data()
+        } else {
             this.get_hist_data()
         }
     }
