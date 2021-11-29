@@ -20,6 +20,7 @@
     margin: 20px 2%;
     background-color: white;
     border: 5px solid green;
+    overflow: auto;
 }
 
 #radio-box {
