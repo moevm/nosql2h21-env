@@ -34,6 +34,8 @@ class Statistics extends Component {
             current_min: 0,
             current_max: 0,
         }
+
+        this.location = "Arizona";
     }
 
     componentDidMount() {
@@ -46,9 +48,37 @@ class Statistics extends Component {
         })
     }
 
+    get_hist_data() {
+        let interval = this.years
+        if (interval !== undefined) {
+            interval = {
+                min: interval.current_min,
+                max: interval.current_max
+            }
+        }
+        let substance;
+        for (const key in this.state.substances) {
+            if (this.state.substances[key]) {
+                substance = key;
+                break;
+            }
+        }
+
+        $.get('/stats/hist', {substance: substance, interval: interval}, (res) => {
+            let str_res = ""
+            for (const key in res) {
+                str_res += `<p>${key}: ${res[key]}</p>`
+            }
+            $("#statistics-container").html(str_res);
+        })
+    }
+
     updateYears(current_min, current_max) {
         this.years.current_min = current_min
         this.years.current_max = current_max
+        if (this.state.types.dot) {} else {
+            this.get_hist_data()
+        }
     }
 
     updateSubstances(event) {
@@ -64,6 +94,9 @@ class Statistics extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
+        if (this.state.types.dot) {} else {
+            this.get_hist_data()
+        }
     }
 
     updateTypes(event) {
@@ -77,6 +110,9 @@ class Statistics extends Component {
         }
         types[event.target.value] = true
         this.setState({types: types})
+        if (types.dot) {} else {
+            this.get_hist_data()
+        }
     }
 
     render() {
