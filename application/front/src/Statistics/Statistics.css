@@ -1,0 +1,35 @@
+#statistics-box-left {
+    float: left;
+    width: 80%;
+}
+
+#statistics-box-right {
+    /*float: right;*/
+    /*display: flex;*/
+    /*padding: 100px 140px 100px 20px;*/
+    /*font-size: 1.2em;*/
+    float: right;
+    width: 15%;
+    font-size: 1.2em;
+}
+
+#statistics-container {
+    width: 95%;
+    height: 65vh;
+    margin: 20px 2%;
+    background-color: white;
+    border: 5px solid green;
+}
+
+.statistics-radio-box {
+    margin: 50px 0;
+    padding: 10px;
+}
+
+#radio-box {
+
+}
+
+.statistics-radio-wrapper {
+    margin: 10px auto;
+}

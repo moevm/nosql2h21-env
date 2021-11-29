@@ -150,20 +150,6 @@ class Table extends Component {
         this.set_page_state(PAGE_STATUS.DISPLAY)
     }
 
-    get_header() {
-        return (
-            <tr id={'table-header'}>
-                {Object.keys(this.state.columns).map((name, index) => {
-                    if (this.state.columns[name]) {
-                        let value;
-                        value = columnsMap[name]
-                        return <th className={'data-th'} key={index}>{value}</th>
-                    }
-                })}
-            </tr>
-        )
-    }
-
     get_line(line) {
         return (
             <tr className={'table-line'}>
@@ -172,11 +158,11 @@ class Table extends Component {
                         let value;
                         if (typeof line === 'object') {
                             value = line[name]
-                            return <td className={'data-td'} key={index}>{value}</td>
+                            return <td key={index}>{value}</td>
                         }
                         else {
                             value = columnsMap[name]
-                            return <th className={'data-th'} key={index}>{value}</th>
+                            return <th key={index}>{value}</th>
                         }
                     }
                 })}

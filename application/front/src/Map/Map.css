@@ -1,0 +1,31 @@
+#map-box-left {
+    float: left;
+    width: 80%;
+}
+
+#map-box-right {
+    /*float: right;*/
+    /*display: flex;*/
+    /*padding: 100px 140px 100px 20px;*/
+    /*font-size: 1.2em;*/
+    float: right;
+    width: 15%;
+    padding-top: 50px;
+    font-size: 1.2em;
+}
+
+#map-container {
+    width: 95%;
+    height: 65vh;
+    margin: 20px 2%;
+    background-color: white;
+    border: 5px solid green;
+}
+
+#radio-box {
+
+}
+
+.map-radio-wrapper {
+    margin: 10px auto;
+}
