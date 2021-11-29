@@ -213,7 +213,8 @@ class Statistics extends Component {
                     </div>
 
                     <div className={'statistics-radio-box'}>
-                        <select onChange={(e) => {this.updateLocation(e)}}>
+                        <select className={'statistics-select'}
+                            onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
                                 return <option value={state}>{state}</option>
                             })}

@@ -45,3 +45,9 @@
     background-color: white;
     font-size: 0.8em;
 }
+
+.statistics-select {
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+}
