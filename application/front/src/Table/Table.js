@@ -106,7 +106,7 @@ class Table extends Component {
         }
 
         $.get('filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
-            this.setState({data: this.state.data.concat(res)})
+            this.setState({data: ['header'].concat(this.state.data.concat(res))})
         })
     }
 

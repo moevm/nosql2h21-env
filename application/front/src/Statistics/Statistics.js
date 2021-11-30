@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
 import './Statistics.css';
 import $ from 'jquery';
-import { throttle, debounce } from 'throttle-debounce'
+import { debounce } from 'throttle-debounce'
 
 
 const chart_types = {
@@ -115,6 +115,8 @@ class Statistics extends Component {
     }
 
     fetch_data = debounce(500, false, () => {
+        $("#statistics-container").html('LOADING...');
+
         if (this.state.types.dot) {
             this.get_plots_data()
         } else {

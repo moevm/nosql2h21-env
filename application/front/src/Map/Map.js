@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
 import './Map.css';
 import $ from 'jquery';
-import { throttle, debounce } from 'throttle-debounce'
+import { debounce } from 'throttle-debounce'
 
 
 class Map extends Component {
@@ -41,7 +41,9 @@ class Map extends Component {
     }
 
 
-    fetch_data =  debounce(500, false, () => {
+    fetch_data =  debounce(500, false, async () => {
+        $("#map-container").html('LOADING...');
+
         let interval = this.years
         if (interval !== undefined) {
             interval = {
@@ -66,19 +68,19 @@ class Map extends Component {
             }
         });
 
-        $.get('/map', {substance: substance, interval: interval}, (res) => {
+        await $.get('/map', {substance: substance, interval: interval}, (res) => {
             for (const key in res) {
                 states_data[key].mean = res[key]
             }
-
-            let res_str = "";
-            for (const key in states_data) {
-                res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`
-            }
-            $("#map-container").html(res_str);
-
-            this.states_data = states_data;
         });
+
+        let res_str = "";
+        for (const key in states_data) {
+            res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`
+        }
+        $("#map-container").html(res_str);
+
+        this.states_data = states_data;
     })
 
     updateYears(current_min, current_max, mouse_down) {
