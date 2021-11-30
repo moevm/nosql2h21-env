@@ -110,20 +110,14 @@ class Statistics extends Component {
         })
     }
 
-    fetch_data() {
-        if (this.state.types.dot) {
-            this.get_plots_data()
-        }
-        else if (this.state.types.histogram) {
-            this.get_hist_data()
-        }
-    }
-
     updateYears(current_min, current_max) {
         this.years.current_min = current_min
         this.years.current_max = current_max
-
-        this.fetch_data()
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        } else {
+            this.get_hist_data()
+        }
     }
 
     updateSubstances(event) {
@@ -139,8 +133,11 @@ class Statistics extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
-
-        this.fetch_data()
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        } else {
+            this.get_hist_data()
+        }
     }
 
     updateTypes(event) {
@@ -154,14 +151,19 @@ class Statistics extends Component {
         }
         types[event.target.value] = true
         this.setState({types: types})
-
-        this.fetch_data()
+        if (types.dot) {
+            this.location = "WHOLE COUNTRY"
+            this.get_plots_data()
+        } else {
+            this.get_hist_data()
+        }
     }
 
     updateLocation(event) {
         this.location = event.target.value
-
-        this.fetch_data()
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        }
     }
 
     render() {
@@ -213,8 +215,9 @@ class Statistics extends Component {
                             )
                         })}
                     </div>
-
-                    <div className={'statistics-radio-box'}>
+                    {this.state.types.dot &&
+                        <div className={'statistics-radio-box'}>
+                        <span>Выберите штат:</span>
                         <select className={'statistics-select'}
                             onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
@@ -222,6 +225,8 @@ class Statistics extends Component {
                             })}
                         </select>
                     </div>
+                    }
+                    
                 </div>
             </div>
         )
@@ -229,3 +234,4 @@ class Statistics extends Component {
 }
 
 export default Statistics;
+
