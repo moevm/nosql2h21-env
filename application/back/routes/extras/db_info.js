@@ -34,7 +34,7 @@ async function get_states_location() {
             let session = driver.session();
             try {
                 let res = await session.run(`MATCH (location:Address)\
-                WHERE location.state = $state\
+                WHERE location.state = $state AND location.city <> "Not in a city"\
                 RETURN DISTINCT location.city AS city`,
                 {state: state});
                 if (res.records.length > 0) {

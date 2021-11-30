@@ -42,7 +42,7 @@ class Map extends Component {
         }
 
         let states_data = {}
-        $.get('/location', {}, (res) => {
+        await $.get('/location', {}, (res) => {
             for (const key in res) {
                 states_data[key] = {address: res[key]}
             }
