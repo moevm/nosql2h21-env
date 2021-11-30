@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
 import './Statistics.css';
-import $ from "jquery";
+import $ from 'jquery';
+import { throttle, debounce } from 'throttle-debounce'
 
 
 const chart_types = {
@@ -56,7 +57,10 @@ class Statistics extends Component {
             this.years = years
             this.forceUpdate()
         })
+
+        $("#statistics-container").html('LOADING...');
     }
+
 
     get_plots_data() {
         let interval = this.years
@@ -110,13 +114,20 @@ class Statistics extends Component {
         })
     }
 
-    updateYears(current_min, current_max) {
-        this.years.current_min = current_min
-        this.years.current_max = current_max
+    fetch_data = debounce(500, false, () => {
         if (this.state.types.dot) {
             this.get_plots_data()
         } else {
             this.get_hist_data()
+        }
+    })
+
+    updateYears(current_min, current_max, mouse_down) {
+        if (!mouse_down) {
+            this.years.current_min = current_min
+            this.years.current_max = current_max
+
+            this.fetch_data()
         }
     }
 
@@ -133,11 +144,8 @@ class Statistics extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
-        if (this.state.types.dot) {
-            this.get_plots_data()
-        } else {
-            this.get_hist_data()
-        }
+
+        this.fetch_data()
     }
 
     updateTypes(event) {
@@ -153,18 +161,18 @@ class Statistics extends Component {
         this.setState({types: types})
         if (types.dot) {
             this.location = "WHOLE COUNTRY"
-            this.get_plots_data()
-        } else {
-            this.get_hist_data()
         }
+
+        this.fetch_data()
     }
 
     updateLocation(event) {
         this.location = event.target.value
         if (this.state.types.dot) {
-            this.get_plots_data()
+            this.fetch_data()
         }
     }
+
 
     render() {
         return (
@@ -179,7 +187,7 @@ class Statistics extends Component {
                             max={this.years.max}
                             current_min={this.years.current_min}
                             current_max={this.years.current_max}
-                            onChange={({ min, max }) => this.updateYears(min, max)}
+                            onChange={({ min, max, mouseDown }) => this.updateYears(min, max, mouseDown)}
                         />
                     </div>
                 </div>
@@ -216,17 +224,17 @@ class Statistics extends Component {
                         })}
                     </div>
                     {this.state.types.dot &&
-                        <div className={'statistics-radio-box'}>
+                    <div className={'statistics-radio-box'}>
                         <span>Выберите штат:</span>
                         <select className={'statistics-select'}
-                            onChange={(e) => {this.updateLocation(e)}}>
+                                onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
                                 return <option value={state}>{state}</option>
                             })}
                         </select>
                     </div>
                     }
-                    
+
                 </div>
             </div>
         )

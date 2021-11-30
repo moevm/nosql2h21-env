@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
 import './Map.css';
-import $ from "jquery";
+import $ from 'jquery';
+import { throttle, debounce } from 'throttle-debounce'
 
 
 class Map extends Component {
@@ -25,7 +26,22 @@ class Map extends Component {
         }
     }
 
-    async get_map_data() {
+    componentDidMount() {
+        $.get('/years', {}, (res) => {
+            let years = res
+            years.current_min = years.min
+            years.current_max = years.max
+            this.years = years
+            this.forceUpdate()
+
+            this.fetch_data();
+        })
+
+        $("#map-container").html('LOADING...');
+    }
+
+
+    fetch_data =  debounce(500, false, () => {
         let interval = this.years
         if (interval !== undefined) {
             interval = {
@@ -33,6 +49,7 @@ class Map extends Component {
                 max: interval.current_max
             }
         }
+
         let substance;
         for (const key in this.state.substances) {
             if (this.state.substances[key]) {
@@ -42,41 +59,34 @@ class Map extends Component {
         }
 
         let states_data = {}
+
         $.get('/location', {}, (res) => {
             for (const key in res) {
                 states_data[key] = {address: res[key]}
             }
         });
-        await $.get('/map', {substance: substance, interval: interval}, (res) => {
+
+        $.get('/map', {substance: substance, interval: interval}, (res) => {
             for (const key in res) {
                 states_data[key].mean = res[key]
             }
+
+            let res_str = "";
+            for (const key in states_data) {
+                res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`
+            }
+            $("#map-container").html(res_str);
+
+            this.states_data = states_data;
         });
+    })
 
-        let res_str = "";
-        for (const key in states_data) {
-            res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`
+    updateYears(current_min, current_max, mouse_down) {
+        if (!mouse_down) {
+            this.years.current_min = current_min
+            this.years.current_max = current_max
+            this.fetch_data();
         }
-        $("#map-container").html(res_str);
-
-        this.states_data = states_data;
-    }
-
-    componentDidMount() {
-        $.get('/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-            this.forceUpdate()
-        })
-        this.get_map_data();
-    }
-
-    updateYears(current_min, current_max) {
-        this.years.current_min = current_min
-        this.years.current_max = current_max
-        this.get_map_data()
     }
 
     updateSubstances(event) {
@@ -92,7 +102,7 @@ class Map extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
-        this.get_map_data();
+        this.fetch_data();
     }
 
     render() {
@@ -108,7 +118,7 @@ class Map extends Component {
                             max={this.years.max}
                             current_min={this.years.current_min}
                             current_max={this.years.current_max}
-                            onChange={({ min, max }) => this.updateYears(min, max)}
+                            onChange={({ min, max, mouseDown}) => this.updateYears(min, max, mouseDown)}
                         />
                     </div>
                 </div>

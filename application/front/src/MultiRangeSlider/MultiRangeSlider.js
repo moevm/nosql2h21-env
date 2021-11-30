@@ -9,6 +9,7 @@ const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
     const [maxVal, setMaxVal] = useState(max);
     const [minValCurr, setMinValCurr] = useState(current_min);
     const [maxValCurr, setMaxValCurr] = useState(current_max);
+    const [mouseDown, setMouseDown] = useState(false);
     const minValRef = useRef(null);
     const maxValRef = useRef(null);
     const range = useRef(null);
@@ -53,8 +54,8 @@ const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
 
     // Get min and max values when their state changes
     useEffect(() => {
-        onChange({ min: minValCurr, max: maxValCurr });
-    }, [minValCurr, maxValCurr, onChange]);
+        onChange({ min: minValCurr, max: maxValCurr, mouseDown: mouseDown });
+    }, [minValCurr, maxValCurr, mouseDown, onChange]);
 
     return (
         <div className="container">
@@ -69,6 +70,8 @@ const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
                     setMinValCurr(value);
                     event.target.value = value.toString();
                 }}
+                onMouseDown={() => {setMouseDown(true)}}
+                onMouseUp={() => {setMouseDown(false)}}
                 className={classnames("thumb thumb--zindex-3", {
                     "thumb--zindex-5": minValCurr > max - 100
                 })}
@@ -84,6 +87,8 @@ const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
                     setMaxValCurr(value);
                     event.target.value = value.toString();
                 }}
+                onMouseDown={() => {setMouseDown(true)}}
+                onMouseUp={() => {setMouseDown(false)}}
                 className="thumb thumb--zindex-4"
             />
 
@@ -100,6 +105,8 @@ const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
 MultiRangeSlider.propTypes = {
     min: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
+    current_min: PropTypes.number.isRequired,
+    current_max: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired
 };
 
