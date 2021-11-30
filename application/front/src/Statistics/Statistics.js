@@ -110,14 +110,20 @@ class Statistics extends Component {
         })
     }
 
+    fetch_data() {
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        }
+        else if (this.state.types.histogram) {
+            this.get_hist_data()
+        }
+    }
+
     updateYears(current_min, current_max) {
         this.years.current_min = current_min
         this.years.current_max = current_max
-        if (this.state.types.dot) {
-            this.get_plots_data()
-        } else {
-            this.get_hist_data()
-        }
+
+        this.fetch_data()
     }
 
     updateSubstances(event) {
@@ -133,11 +139,8 @@ class Statistics extends Component {
         }
         substances[event.target.value] = true
         this.setState({substances: substances})
-        if (this.state.types.dot) {
-            this.get_plots_data()
-        } else {
-            this.get_hist_data()
-        }
+
+        this.fetch_data()
     }
 
     updateTypes(event) {
@@ -151,15 +154,14 @@ class Statistics extends Component {
         }
         types[event.target.value] = true
         this.setState({types: types})
-        if (types.dot) {
-            this.get_plots_data()
-        } else {
-            this.get_hist_data()
-        }
+
+        this.fetch_data()
     }
 
     updateLocation(event) {
         this.location = event.target.value
+
+        this.fetch_data()
     }
 
     render() {
@@ -227,4 +229,3 @@ class Statistics extends Component {
 }
 
 export default Statistics;
-
