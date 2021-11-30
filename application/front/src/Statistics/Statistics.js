@@ -152,6 +152,7 @@ class Statistics extends Component {
         types[event.target.value] = true
         this.setState({types: types})
         if (types.dot) {
+            this.location = "WHOLE COUNTRY"
             this.get_plots_data()
         } else {
             this.get_hist_data()
@@ -160,6 +161,9 @@ class Statistics extends Component {
 
     updateLocation(event) {
         this.location = event.target.value
+        if (this.state.types.dot) {
+            this.get_plots_data()
+        }
     }
 
     render() {
@@ -211,8 +215,9 @@ class Statistics extends Component {
                             )
                         })}
                     </div>
-
-                    <div className={'statistics-radio-box'}>
+                    {this.state.types.dot &&
+                        <div className={'statistics-radio-box'}>
+                        <span>Выберите штат:</span>
                         <select className={'statistics-select'}
                             onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
@@ -220,6 +225,8 @@ class Statistics extends Component {
                             })}
                         </select>
                     </div>
+                    }
+                    
                 </div>
             </div>
         )
