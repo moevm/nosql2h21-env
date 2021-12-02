@@ -55,6 +55,7 @@
 }
 
 .table-box-right__button {
+    cursor: pointer;
     width: 90%;
     margin: 5px 5%;
     border-radius: 12px 0 4px 0;;
