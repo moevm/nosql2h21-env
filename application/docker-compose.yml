@@ -13,6 +13,14 @@ services:
       - NEO4J_apoc_import_file_enabled=true
       - NEO4J_apoc_import_file_use__neo4j__config=true
       - NEO4JLABS_PLUGINS=["apoc"]
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - '3000:80'
+    depends_on:
+      - back
+      - front
   back:
     build: ./back
     volumes:
@@ -26,7 +34,3 @@ services:
     build: ./front
     volumes:
       - "./front:/app"
-    ports:
-      - "3000:3000"
-    depends_on:
-      - back

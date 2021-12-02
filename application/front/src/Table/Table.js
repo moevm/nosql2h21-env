@@ -70,7 +70,7 @@ class Table extends Component {
     componentDidMount() {
         this.filter()
 
-        $.get('states', {}, (res) => {
+        $.get('/api/states', {}, (res) => {
             let states = []
             res.forEach((value) => {
                 states.push({name: value, check: true})
@@ -78,7 +78,7 @@ class Table extends Component {
             this.states = states
         })
 
-        $.get('years', {}, (res) => {
+        $.get('/api/years', {}, (res) => {
             let years = res
             years.current_min = years.min
             years.current_max = years.max
@@ -105,7 +105,7 @@ class Table extends Component {
             }
         }
 
-        $.get('filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
+        $.get('api/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
             this.setState({data: ['header'].concat(this.state.data.concat(res))})
         })
     }

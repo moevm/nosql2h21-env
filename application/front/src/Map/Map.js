@@ -27,7 +27,7 @@ class Map extends Component {
     }
 
     componentDidMount() {
-        $.get('/years', {}, (res) => {
+        $.get('/api/years', {}, (res) => {
             let years = res
             years.current_min = years.min
             years.current_max = years.max
@@ -62,13 +62,13 @@ class Map extends Component {
 
         let states_data = {}
 
-        $.get('/location', {}, (res) => {
+        $.get('/api/location', {}, (res) => {
             for (const key in res) {
                 states_data[key] = {address: res[key]}
             }
         });
 
-        await $.get('/map', {substance: substance, interval: interval}, (res) => {
+        await $.get('/api/map', {substance: substance, interval: interval}, (res) => {
             for (const key in res) {
                 states_data[key].mean = res[key]
             }
