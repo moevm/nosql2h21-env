@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  neo4j:
+    build: ./neo4j
+    restart: always
+    volumes:
+      - "./neo4j/data:/data"
+      - "./neo4j/plugins:/plugins"
+    environment:
+      - NEO4J_AUTH=neo4j/1234
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4JLABS_PLUGINS=["apoc"]
+  back:
+    build: ./back
+    volumes:
+      - "./back:/app"
+    environment:
+      USER: "neo4j"
+      PASSWORD: "1234"
+    depends_on:
+      - neo4j
+  front:
+    build: ./front
+    volumes:
+      - "./front:/app"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - back

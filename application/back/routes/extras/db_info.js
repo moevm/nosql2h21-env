@@ -1,5 +1,5 @@
 let neo4j = require('neo4j-driver');
-let creds = require("./credentials.json");
+let creds = require("./credentials.js");
 // var env = require('node-env-file');
 // env(__dirname + '/.env');
 // // YOU HAVE TO CREATE .env file in current directory with following content:

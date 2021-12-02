@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 let neo4j = require('neo4j-driver');
-let creds = require("./extras/credentials.json");
+let creds = require("./extras/credentials");
 
 let db_info = require("./extras/db_info");
 

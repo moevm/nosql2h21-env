@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 let neo4j = require('neo4j-driver');
-let creds = require("./extras/credentials.json");
+let creds = require("./extras/credentials");
 
 let db_info = require("./extras/db_info");
 
@@ -74,10 +74,6 @@ async function map_request(substance, interval) {
     });
     return map_data;
 }
-
-router.get('/', function(req, res) {
-    res.render('index', { title: 'Express' });
-});
 
 router.get('/filter', async (req, res) => {
     let states = req.query.states || ['California', 'Arizona'];

@@ -1,3 +1,5 @@
 node_modules
 credentials.json
 .idea
+*.csv
+application/neo4j/**/
