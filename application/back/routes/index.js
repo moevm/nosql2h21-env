@@ -99,6 +99,60 @@ async function map_request(substance, interval) {
     return map_data;
 }
 
+async function add_line(data) {
+    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let session = driver.session();
+
+    try {
+        await session.run("MERGE (address:Address {state: $state, address: $address})\
+                                ON CREATE\
+                                SET address.state_code = toInteger($state_code), address.county_code = toInteger($county_code),\
+                                address.site_num = toInteger($site_num), address.county = $county, address.city = $city\
+                                MERGE (date:Date {date_local: $date_local, year: toInteger(left($date_local, 4))})\
+                                CREATE (address)-[:MEASURED {\
+                                unit_NO2: $unit_NO2,\
+                                mean_NO2: $mean_NO2,\
+                                firstMV_NO2: $firstMV_NO2,\
+                                firstMH_NO2: $firstMH_NO2,\
+                                aqi_NO2: $aqi_NO2,\
+                                unit_O3: $unit_O3,\
+                                mean_O3: $mean_O3,\
+                                firstMV_O3: $firstMV_O3,\
+                                firstMH_O3: $firstMH_O3,\
+                                aqi_O3: $aqi_O3,\
+                                unit_SO2: $unit_SO2,\
+                                mean_SO2: $mean_SO2,\
+                                firstMV_SO2: $firstMV_SO2,\
+                                firstMH_SO2: $firstMH_SO2,\
+                                aqi_SO2: $aqi_SO2,\
+                                unit_CO: $unit_CO,\
+                                mean_CO: $mean_CO,\
+                                firstMV_CO: $firstMV_CO,\
+                                firstMH_CO: $firstMH_CO,\
+                                aqi_CO: $aqi_CO\
+                                }]->(date)",
+            {state_code: data[0], county_code: data[1], site_num: data[2], address : data[3], state : data[4], county: data[5], city: data[6], date_local: data[7],
+                unit_NO2: data[8], mean_NO2 : data[9], firstMV_NO2 : data[10], firstMH_NO2 : data[11], aqi_O3 : data[12],
+                unit_O3 : data[13], mean_O3 : data[14], firstMV_O3 : data[15], firstMH_O3 : data[16], aqi_NO2 : data[17],
+                unit_SO2 : data[18], mean_SO2 : data[19], firstMV_SO2 : data[20], firstMH_SO2 : data[21], aqi_CO : data[22],
+                unit_CO : data[23], mean_CO : data[24], firstMV_CO : data[25], firstMH_CO : data[26], aqi_SO2 : data[27]});
+        /*'state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
+            'unit_NO2', 'mean_NO2', 'firstMV_NO2', 'firstMH_NO2', 'aqi_NO2',
+            'unit_O3', 'mean_O3', 'firstMV_O3', 'firstMH_O3', 'aqi_O3',
+            'unit_SO2', 'mean_SO2', 'firstMV_SO2', 'firstMH_SO2', 'aqi_SO2',
+            'unit_CO', 'mean_CO', 'firstMV_CO', 'firstMH_CO', 'aqi_CO'*/
+        let err = "Success";
+        return err;
+    } catch (e) {
+        console.log(e);
+        err = "Error";
+        return err;
+    } finally {
+        await session.close();
+        await driver.close();
+    }
+}
+
 router.get('/', function(req, res) {
     res.render('index', { title: 'Express' });
 });
@@ -155,6 +209,24 @@ router.get('/exportreq', async (req, res) => {
 
         }));
         console.log("Send it");
+    });
+});
+
+router.get('/add', async (req, res) => {
+    /*Format: 'state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
+            'unit_NO2', 'mean_NO2', 'firstMV_NO2', 'firstMH_NO2', 'aqi_NO2',
+            'unit_O3', 'mean_O3', 'firstMV_O3', 'firstMH_O3', 'aqi_O3',
+            'unit_SO2', 'mean_SO2', 'firstMV_SO2', 'firstMH_SO2', 'aqi_SO2',
+            'unit_CO', 'mean_CO', 'firstMV_CO', 'firstMH_CO', 'aqi_CO'*/
+    let data = req.query.states ||
+        [4, 13, 3002, '1645 E ROOSEVELT ST-CENTRAL PHOENIX STN', 'Arizona', 'Maricopa', 'Phoenix', '2000-04-05',
+        'Parts per billion', '39.5', '68.0', '0', '66',
+        'Parts per million', '0.01025', '0.0289999', '14', '25',
+        'Parts per billion', '1.7619049999', '6.0', '2', '9.0',
+        'Parts per million', '1.523077', '2.0', '2', '23.0'];
+    add_line(data).then((err) => {
+        res.send(err);
+
     });
 });
 
