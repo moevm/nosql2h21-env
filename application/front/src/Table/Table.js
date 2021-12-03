@@ -53,7 +53,7 @@ class Table extends Component {
                 aqi_CO: true
             },
 
-            data: ['header'],
+            data: [],
             hasMore: true
         }
 
@@ -105,8 +105,8 @@ class Table extends Component {
             }
         }
 
-        $.get('api/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
-            this.setState({data: ['header'].concat(this.state.data.concat(res))})
+        $.get('/api/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
+            this.setState({data: this.state.data.concat(res)})
         })
     }
 
@@ -156,7 +156,7 @@ class Table extends Component {
                 {Object.keys(this.state.columns).map((name, index) => {
                     if (this.state.columns[name]) {
                         let value;
-                        if (typeof line === 'object') {
+                        if (line && typeof line === 'object') {
                             value = line[name]
                             return <td key={index}>{value}</td>
                         }
@@ -178,17 +178,20 @@ class Table extends Component {
                 <div id='table-box'>
                     <div id='table-box-left'>
                         <div id='table-box-left__inner'>
-                            <table id='data-table' className={'table-border-none'}>
-                                <tbody>
-                                    <InfiniteScroll next={this.fetch_data}
-                                                    hasMore={this.state.hasMore}
-                                                    loader={<h3>Loading...</h3>}
-                                                    dataLength={this.state.data.length}
-                                                    scrollableTarget={'table-box-left__inner'}>
+                            <InfiniteScroll next={this.fetch_data}
+                                            hasMore={this.state.hasMore}
+                                            loader={''}
+                                            dataLength={this.state.data.length}
+                                            scrollableTarget={'data-table'}>
+                                <table id='data-table' className={'table-border-none'}>
+                                    <thead>
+                                        {this.get_line()}
+                                    </thead>
+                                    <tbody>
                                         {this.state.data.map((observation) => this.get_line(observation))}
-                                    </InfiniteScroll>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </InfiniteScroll>
                         </div>
                     </div>
                     <div id='table-box-right'>

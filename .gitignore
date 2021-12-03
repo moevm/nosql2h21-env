@@ -3,3 +3,4 @@ credentials.json
 .idea
 *.csv
 application/neo4j/**/
+.env
