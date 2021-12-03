@@ -1,5 +1,5 @@
 USING PERIODIC COMMIT 10000
-LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2016_qm.csv' AS line
+LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2007_qm.csv' AS line
 FIELDTERMINATOR ';'
 MERGE (address:Address {state: line.state, address: line.address})
 ON CREATE
