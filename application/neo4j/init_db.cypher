@@ -1,4 +1,4 @@
-:auto USING PERIODIC COMMIT 10000
+USING PERIODIC COMMIT 10000
 LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2016_qm.csv' AS line
 FIELDTERMINATOR ';'
 MERGE (address:Address {state: line.state, address: line.address})
@@ -13,7 +13,8 @@ CREATE (address)-[:MEASURED {
     firstMH_NO2: line.firstMH_NO2,
     aqi_NO2: line.aqi_NO2,
     unit_O3: line.unit_O3,
-    mean_O3: line.mean_O3,     firstMV_O3: line.firstMV_O3,
+    mean_O3: line.mean_O3,
+    firstMV_O3: line.firstMV_O3,
     firstMH_O3: line.firstMH_O3,
     aqi_O3: line.aqi_O3,
     unit_SO2: line.unit_SO2,
@@ -26,4 +27,4 @@ CREATE (address)-[:MEASURED {
     firstMV_CO: line.firstMV_CO,
     firstMH_CO: line.firstMH_CO,
     aqi_CO: line.aqi_CO
-}]->(date)
+}]->(date);

@@ -7,7 +7,7 @@ let creds = require("./extras/credentials");
 let db_info = require("./extras/db_info");
 
 async function filter_request(states, interval, page, lines) {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     lines = parseInt(lines);
@@ -35,7 +35,7 @@ async function filter_request(states, interval, page, lines) {
 
 async function map_request(substance, interval) {
     let map_data = db_info.get_states().then(async (records) => {
-        let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
         let map_data = {};
         let zero = 0;
         for (let record of records) {

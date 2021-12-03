@@ -12,7 +12,7 @@ let apoc = require('apoc');
 
 
 async function get_states() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (location:Address) RETURN DISTINCT location.state as state", {});
@@ -27,7 +27,7 @@ async function get_states() {
 
 async function get_states_location() {
     let location = get_states().then(async (records) => {
-        let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
         let location = {};
         for (let record of records) {
             let state = record.get("state");
@@ -56,7 +56,7 @@ async function get_states_geolocation() {
         let state = 'Arizona'
         console.log(state);
         let geolocation = get_states_location().then(async (location) => {
-            let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+            let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
             let geolocation = {};
             let session = driver.session();
             console.log(location[state]);
@@ -105,7 +105,7 @@ async function get_states_geolocation() {
 
 
 async function get_years() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (date:Date) RETURN max(date.year) as max_year, min(date.year) as min_year", {});

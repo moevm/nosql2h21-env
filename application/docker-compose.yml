@@ -7,6 +7,7 @@ services:
     volumes:
       - "./neo4j/data:/data"
       - "./neo4j/plugins:/plugins"
+      - "./neo4j/init_db.cypher:/init_db.cypher"
     environment:
       - NEO4J_AUTH=neo4j/1234
       - NEO4J_apoc_export_file_enabled=true
