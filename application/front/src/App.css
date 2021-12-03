@@ -14,14 +14,17 @@ body {
 }
 
 #house-frame {
+  cursor: pointer;
   float: left;
 }
 
 #house {
+
   height: 56px;
 }
 
 .site-header__button {
+  cursor: pointer;
   height: 60px;
   padding-left: 20px;
   padding-right: 20px;
@@ -59,3 +62,5 @@ body {
   background-color: transparent;
   font-size: 1.2em;
 }
+
+
