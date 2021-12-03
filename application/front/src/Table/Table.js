@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import TableColumnsWindow from "./TableColumnsWindow/TableColumnsWindow";
-import StatesWindow from "../StatesWindow/StatesWindow";
-import TableYearsWindow from "./TableYearsWindow/TableYearsWindow";
+import ColumnsWindow from "./ColumnsWindow/ColumnsWindow";
+import StatesWindow from "./StatesWindow/StatesWindow";
+import YearsWindow from "./YearsWindow/YearsWindow";
+import NewRowWindow from "./NewRowWindow/NewRowWindow";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {columnsMap} from './columnsOptions'
 import './Table.css';
@@ -12,7 +13,8 @@ const TABLE_PAGE_STATUS = {
     DISPLAY: 0,
     COLUMNS: 1,
     STATES: 2,
-    YEARS: 3
+    YEARS: 3,
+    NEW_ROW: 4
 };
 
 
@@ -63,6 +65,7 @@ class Table extends Component {
         this.close_columns_window = this.close_columns_window.bind(this)
         this.close_states_window = this.close_states_window.bind(this)
         this.close_years_window = this.close_years_window.bind(this)
+        this.close_new_row_window = this.close_new_row_window.bind(this)
         this.get_line = this.get_line.bind(this)
         this.fetch_data = this.fetch_data.bind(this)
     }
@@ -150,9 +153,13 @@ class Table extends Component {
         this.set_page_state(TABLE_PAGE_STATUS.DISPLAY)
     }
 
-    get_line(line) {
+    close_new_row_window() {
+        this.set_page_state(TABLE_PAGE_STATUS.DISPLAY)
+    }
+
+    get_line(line, id) {
         return (
-            <tr className={'table-line'}>
+            <tr className={'table-line'} key={id}>
                 {Object.keys(this.state.columns).map((name, index) => {
                     if (this.state.columns[name]) {
                         let value;
@@ -164,6 +171,9 @@ class Table extends Component {
                             value = columnsMap[name]
                             return <th key={index}>{value}</th>
                         }
+                    }
+                    else {
+                        return ''
                     }
                 })}
             </tr>
@@ -188,7 +198,7 @@ class Table extends Component {
                                         {this.get_line()}
                                     </thead>
                                     <tbody>
-                                        {this.state.data.map((observation) => this.get_line(observation))}
+                                        {this.state.data.map((observation, id) => this.get_line(observation, id))}
                                     </tbody>
                                 </table>
                             </InfiniteScroll>
@@ -204,18 +214,25 @@ class Table extends Component {
                         <br/>
                         <button className={'table-box-right__button'}
                                 onClick={() => this.set_page_state(TABLE_PAGE_STATUS.YEARS)}>Выбор годов</button>
+                        <br/>
+                        <br/>
+                        <button className={'table-box-right__button'}
+                                onClick={() => this.set_page_state(TABLE_PAGE_STATUS.NEW_ROW)}>Новая запись</button>
                     </div>
                 </div>
             )
         }
         else if (this.state.status === TABLE_PAGE_STATUS.COLUMNS) {
-            content = <TableColumnsWindow columns={this.state.columns} callback={this.close_columns_window}/>
+            content = <ColumnsWindow columns={this.state.columns} callback={this.close_columns_window}/>
         }
         else if (this.state.status === TABLE_PAGE_STATUS.STATES) {
             content = <StatesWindow states={this.states} callback={this.close_states_window}/>
         }
         else if (this.state.status === TABLE_PAGE_STATUS.YEARS) {
-            content = <TableYearsWindow years={this.years} callback={this.close_years_window}/>
+            content = <YearsWindow years={this.years} callback={this.close_years_window}/>
+        }
+        else if (this.state.status === TABLE_PAGE_STATUS.NEW_ROW) {
+            content = <NewRowWindow callback={this.close_new_row_window}/>
         }
 
         return content

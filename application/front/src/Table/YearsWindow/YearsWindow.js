@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from "../../MultiRangeSlider";
-import './TableYearsWindow.css';
+import './YearsWindow.css';
 
 
-class TableYearsWindow extends Component {
+class YearsWindow extends Component {
     constructor(props) {
         super(props);
         this.years = JSON.parse(JSON.stringify(props.years))
@@ -36,4 +36,4 @@ class TableYearsWindow extends Component {
     };
 }
 
-export default TableYearsWindow;
+export default YearsWindow;

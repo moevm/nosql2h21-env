@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { columnsLabels } from '../columnsOptions'
-import './TableColumnsWindow.css';
+import './ColumnsWindow.css';
 
 
-class TableColumnsWindow extends Component {
+class ColumnsWindow extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -132,4 +132,4 @@ class TableColumnsWindow extends Component {
     };
 }
 
-export default TableColumnsWindow;
+export default ColumnsWindow;
