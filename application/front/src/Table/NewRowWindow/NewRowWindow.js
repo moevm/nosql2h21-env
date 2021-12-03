@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { columnsLabels } from '../columnsOptions'
 import './NewRowWindow.css';
+import $ from "jquery";
 
 
 class NewRowWindow extends Component {
@@ -108,8 +109,11 @@ class NewRowWindow extends Component {
             alert('Укажите единицу измерения CO');
             return;
         }
+        console.log(this.state.observation);
 
-        // TODO post ajax request
+        $.get('/add', {data: this.state.observation}, (err) => {
+            console.log(err);
+        })
     }
 
     render() {

@@ -131,16 +131,12 @@ async function add_line(data) {
                                 firstMH_CO: $firstMH_CO,\
                                 aqi_CO: $aqi_CO\
                                 }]->(date)",
-            {state_code: data[0], county_code: data[1], site_num: data[2], address : data[3], state : data[4], county: data[5], city: data[6], date_local: data[7],
-                unit_NO2: data[8], mean_NO2 : data[9], firstMV_NO2 : data[10], firstMH_NO2 : data[11], aqi_O3 : data[12],
-                unit_O3 : data[13], mean_O3 : data[14], firstMV_O3 : data[15], firstMH_O3 : data[16], aqi_NO2 : data[17],
-                unit_SO2 : data[18], mean_SO2 : data[19], firstMV_SO2 : data[20], firstMH_SO2 : data[21], aqi_CO : data[22],
-                unit_CO : data[23], mean_CO : data[24], firstMV_CO : data[25], firstMH_CO : data[26], aqi_SO2 : data[27]});
-        /*'state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
-            'unit_NO2', 'mean_NO2', 'firstMV_NO2', 'firstMH_NO2', 'aqi_NO2',
-            'unit_O3', 'mean_O3', 'firstMV_O3', 'firstMH_O3', 'aqi_O3',
-            'unit_SO2', 'mean_SO2', 'firstMV_SO2', 'firstMH_SO2', 'aqi_SO2',
-            'unit_CO', 'mean_CO', 'firstMV_CO', 'firstMH_CO', 'aqi_CO'*/
+            {state_code: data.state_code, county_code: data.county_code, site_num: data.site_num, address : data.address, state : data.state, county: data.county, city: data.city, date_local: data.date_local,
+                unit_NO2: data.unit_NO2, mean_NO2 : data.mean_NO2, firstMV_NO2 : data.firstMV_NO2, firstMH_NO2 : data.firstMH_NO2, aqi_O3 : data.aqi_O3,
+                unit_O3 : data.unit_O3, mean_O3 : data.mean_O3, firstMV_O3 : data.firstMV_O3, firstMH_O3 : data.firstMH_O3, aqi_NO2 : data.aqi_NO2,
+                unit_SO2 : data.unit_SO2, mean_SO2 : data.mean_SO2, firstMV_SO2 : data.firstMV_SO2, firstMH_SO2 : data.firstMH_SO2, aqi_CO : data.aqi_CO,
+                unit_CO : data.unit_CO, mean_CO : data.mean_CO, firstMV_CO : data.firstMV_CO, firstMH_CO : data.firstMH_CO, aqi_SO2 : data.aqi_SO2});
+
         let err = "Success";
         return err;
     } catch (e) {
@@ -213,17 +209,13 @@ router.get('/exportreq', async (req, res) => {
 });
 
 router.get('/add', async (req, res) => {
-    /*Format: 'state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
-            'unit_NO2', 'mean_NO2', 'firstMV_NO2', 'firstMH_NO2', 'aqi_NO2',
-            'unit_O3', 'mean_O3', 'firstMV_O3', 'firstMH_O3', 'aqi_O3',
-            'unit_SO2', 'mean_SO2', 'firstMV_SO2', 'firstMH_SO2', 'aqi_SO2',
-            'unit_CO', 'mean_CO', 'firstMV_CO', 'firstMH_CO', 'aqi_CO'*/
-    let data = req.query.states ||
-        [4, 13, 3002, '1645 E ROOSEVELT ST-CENTRAL PHOENIX STN', 'Arizona', 'Maricopa', 'Phoenix', '2000-04-05',
-        'Parts per billion', '39.5', '68.0', '0', '66',
-        'Parts per million', '0.01025', '0.0289999', '14', '25',
-        'Parts per billion', '1.7619049999', '6.0', '2', '9.0',
-        'Parts per million', '1.523077', '2.0', '2', '23.0'];
+
+    let data = req.query.data ||
+        {state_code: 4, county_code:13, site_num: 3002, address: '1645 E ROOSEVELT ST-CENTRAL PHOENIX STN', state: 'Arizona', county: 'Maricopa', city: 'Phoenix', date_local: '2000-04-05',
+            unit_NO2: 'Parts per billion', mean_NO2: '39.5', firstMV_NO2: '68.0', firstMH_NO2: '0', aqi_NO2: '66',
+            unit_O3: 'Parts per million', mean_O3: '0.01025', firstMV_O3: '0.0289999', firstMH_O3: '14', aqi_O3: '25',
+            unit_SO2: 'Parts per billion', mean_SO2: '1.7619049999', firstMV_SO2: '6.0', firstMH_SO2: '2', aqi_SO2: '9.0',
+            unit_CO: 'Parts per million', mean_CO: '1.523077', firstMV_CO: '2.0', firstMH_CO: '2', aqi_CO: '23.0'};
     add_line(data).then((err) => {
         res.send(err);
 
