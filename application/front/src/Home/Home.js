@@ -9,7 +9,9 @@ class Home extends Component {
 
         this.state = {
             file_name: 'States.csv',
-            download_URL: undefined,
+            download_URL: '',
+            file_URL: '',
+            file: '',
             status: ''
         };
 
@@ -82,8 +84,15 @@ class Home extends Component {
         let status = [];    // Status output
         const file_object = event.target.files[0];
         const reader = new FileReader();
+        //this.setState ({file_URL: fileDownloadUrl});
+
 
         let loaded_callback = (event) => {
+            this.setState({
+                file: file_object,
+                file_URL: reader.result
+            });
+            console.log(reader.result);
             // e.target.result is the file's content as text
             const contents = event.target.result;
             status.push(`File name: '${file_object.name}'. Length: ${contents.length} bytes.`);
@@ -96,7 +105,9 @@ class Home extends Component {
         // Mainline of the method
         loaded_callback = loaded_callback.bind(this);
         reader.onload = loaded_callback;
-        reader.readAsText(file_object);
+        reader.readAsDataURL(file_object);
+
+        //reader.readAsText(file_object);
     }
 
     render() {
