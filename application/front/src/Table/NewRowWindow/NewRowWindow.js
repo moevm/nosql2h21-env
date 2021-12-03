@@ -10,17 +10,17 @@ class NewRowWindow extends Component {
             observation: {
 
             }
-        }
+        };
         for (let element of columnsLabels) {
-            this.state.observation[element.value] = ''
+            this.state.observation[element.value] = '';
         }
     }
 
     updateInput(event) {
         if (['state_code', 'county_code', 'site_num'].includes(event.target.name)) {
-            let regex = /^\d*$/
+            let regex = /^\d*$/;
             if (!regex.test(event.target.value)) {
-                return
+                return;
             }
         }
 
@@ -28,84 +28,85 @@ class NewRowWindow extends Component {
             'unit_O3', 'firstMV_O3', 'firstMH_O3', 'aqi_O3',
             'unit_SO2', 'firstMV_SO2', 'firstMH_SO2', 'aqi_SO2',
             'unit_CO', 'firstMV_CO', 'firstMH_CO', 'aqi_CO'].includes(event.target.name)) {
-            let float = Number(event.target.value)
-            console.log(float, event.target.value && !Number(event.target.value))
+
+            let float = Number(event.target.value);
+            console.log(float, event.target.value && !Number(event.target.value));
             if ((event.target.value && !Number(event.target.value)) || event.target.value.includes(' ')) {
-                return
+                return;
             }
         }
 
-        let observation = this.state.observation
-        observation[event.target.name] = event.target.value
-        this.setState({observation: observation})
+        let observation = this.state.observation;
+        observation[event.target.name] = event.target.value;
+        this.setState({observation: observation});
     }
 
     post() {
         for (let key of ['state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
             'unit_NO2', 'unit_O3', 'unit_SO2', 'unit_CO']) {
             if (this.state.observation[key] === '') {
-                return
+                return;
             }
         }
 
         if (this.state.observation['state_code'] === '') {
-            alert('Укажите код штата')
-            return
+            alert('Укажите код штата');
+            return;
         }
 
         if (this.state.observation['county_code'] === '') {
-            alert('Укажите код округа')
-            return
+            alert('Укажите код округа');
+            return;
         }
 
         if (this.state.observation['site_num'] === '') {
-            alert('Укажите код площадки')
-            return
+            alert('Укажите код площадки');
+            return;
         }
 
         if (this.state.observation['address'] === '') {
-            alert('Укажите адресс')
-            return
+            alert('Укажите адресс');
+            return;
         }
 
         if (this.state.observation['state'] === '') {
-            alert('Укажите штат')
-            return
+            alert('Укажите штат');
+            return;
         }
 
         if (this.state.observation['county'] === '') {
-            alert('Укажите округ')
-            return
+            alert('Укажите округ');
+            return;
         }
 
         if (this.state.observation['city'] === '') {
-            alert('Укажите город')
-            return
+            alert('Укажите город');
+            return;
         }
 
         if (this.state.observation['date_local'] === '') {
-            alert('Укажите дату')
-            return
+            alert('Укажите дату');
+            return;
         }
 
         if (this.state.observation['unit_NO2'] === '') {
-            alert('Укажите единицу измерения NO2')
-            return
+            alert('Укажите единицу измерения NO2');
+            return;
         }
 
         if (this.state.observation['unit_O3'] === '') {
-            alert('Укажите единицу измерения O3')
-            return
+            alert('Укажите единицу измерения O3');
+            return;
         }
 
         if (this.state.observation['unit_SO2'] === '') {
-            alert('Укажите единицу измерения SO2')
-            return
+            alert('Укажите единицу измерения SO2');
+            return;
         }
 
         if (this.state.observation['unit_CO'] === '') {
-            alert('Укажите единицу измерения CO')
-            return
+            alert('Укажите единицу измерения CO');
+            return;
         }
 
         // TODO post ajax request
@@ -117,7 +118,7 @@ class NewRowWindow extends Component {
                 <h2>Введите параметры наблюдения</h2>
 
                 {columnsLabels.map((element, id) => {
-                    let type = element.value !== 'date_local' ? 'text' : 'date'
+                    let type = element.value !== 'date_local' ? 'text' : 'date';
 
 
                     return (
@@ -127,7 +128,7 @@ class NewRowWindow extends Component {
                             <input type={type} name={element.value} value={this.state.observation[element.value]}
                             onChange={(event) => this.updateInput(event)}/>
                         </label>
-                    )
+                    );
                 })}
 
 
@@ -136,7 +137,7 @@ class NewRowWindow extends Component {
                 <button className={'modal-window__close'}
                         onClick={() => {this.props.callback()}}>x</button>
             </div>
-        )
+        );
     };
 }
 

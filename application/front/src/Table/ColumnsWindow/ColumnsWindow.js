@@ -8,13 +8,13 @@ class ColumnsWindow extends Component {
         super(props);
         this.state = {
             columns: JSON.parse(JSON.stringify(props.columns))
-        }
+        };
     }
 
     updateColumnsState(event) {
-        let columns = this.state.columns
-        columns[event.target.value] = event.target.checked
-        this.setState({columns: columns})
+        let columns = this.state.columns;
+        columns[event.target.value] = event.target.checked;
+        this.setState({columns: columns});
     }
 
     render() {
@@ -33,7 +33,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -47,7 +47,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -61,7 +61,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -75,7 +75,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -89,7 +89,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -103,7 +103,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
 
@@ -117,7 +117,7 @@ class ColumnsWindow extends Component {
                                             {option.label}
                                         </label>
                                     </td>
-                                )
+                                );
                             })}
                         </tr>
                     </tbody>
@@ -128,7 +128,7 @@ class ColumnsWindow extends Component {
                 <button className={'modal-window__close'}
                         onClick={() => {this.props.callback()}}>x</button>
             </div>
-        )
+        );
     };
 }
 

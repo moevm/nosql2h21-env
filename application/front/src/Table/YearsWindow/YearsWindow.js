@@ -6,12 +6,12 @@ import './YearsWindow.css';
 class YearsWindow extends Component {
     constructor(props) {
         super(props);
-        this.years = JSON.parse(JSON.stringify(props.years))
+        this.years = JSON.parse(JSON.stringify(props.years));
     }
 
     updateYears(min, max) {
-        this.years.current_min = min
-        this.years.current_max = max
+        this.years.current_min = min;
+        this.years.current_max = max;
     }
 
     render() {
@@ -32,7 +32,7 @@ class YearsWindow extends Component {
                 <button className={'modal-window__close'}
                         onClick={() => {this.props.callback()}}>x</button>
             </div>
-        )
+        );
     };
 }
 

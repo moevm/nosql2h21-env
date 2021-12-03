@@ -7,20 +7,20 @@ class StatesWindow extends Component {
         super(props);
         this.state = {
             states: JSON.parse(JSON.stringify(props.states))
-        }
+        };
     }
 
     updateStatesState(event) {
-        let states = this.state.states
+        let states = this.state.states;
         let index = states.findIndex((element) => {
-            return element.name === event.target.value
+            return element.name === event.target.value;
         })
-        states[index].check = event.target.checked
-        this.setState({states: states})
+        states[index].check = event.target.checked;
+        this.setState({states: states});
     }
 
     get_line(states) {
-        let line = []
+        let line = [];
         for (let option of states) {
             line.push(
                 <td className={'states-td'}>
@@ -30,22 +30,22 @@ class StatesWindow extends Component {
                         {option.name}
                     </label>
                 </td>
-            )
+            );
         }
-        return <tr>{line}</tr>
+        return <tr>{line}</tr>;
     }
 
     get_lines() {
-        let lines = []
-        let i = 0
+        let lines = [];
+        let i = 0;
         while (i + 5 < this.state.states.length) {
-            lines.push(this.get_line(this.state.states.slice(i, i + 5)))
-            i += 5
+            lines.push(this.get_line(this.state.states.slice(i, i + 5)));
+            i += 5;
         }
         if (i < this.state.states.length) {
-            lines.push(this.get_line(this.state.states.slice(i, this.state.states.length)))
+            lines.push(this.get_line(this.state.states.slice(i, this.state.states.length)));
         }
-        return <tbody>{lines}</tbody>
+        return <tbody>{lines}</tbody>;
     }
 
     render() {
@@ -61,7 +61,7 @@ class StatesWindow extends Component {
                 <button className={'modal-window__close'}
                         onClick={() => {this.props.callback()}}>x</button>
             </div>
-        )
+        );
     };
 }
 
