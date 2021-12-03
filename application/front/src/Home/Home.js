@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './Home.css';
+import $ from "jquery";
 
 class Home extends Component {
     constructor(props) {
@@ -10,16 +11,7 @@ class Home extends Component {
             fileType: "csv",
             fileDownloadUrl: null,
             status: "",
-            data: [
-                { state: "Arizona",        electors: 11 },
-                { state: "Florida",        electors: 29 },
-                { state: "Iowa",           electors:  6 },
-                { state: "Michigan",       electors: 16 },
-                { state: "North Carolina", electors: 15 },
-                { state: "Ohio",           electors: 18 },
-                { state: "Pennsylvania",   electors: 20 },
-                { state: "Wisconsin",      electors: 10 },
-            ]
+            data: []
         }
         this.download = this.download.bind(this);
         this.upload = this.upload.bind(this);
@@ -27,26 +19,37 @@ class Home extends Component {
     }
 
     download (event) {
-        event.preventDefault();
-        // Prepare the file
-        let output;
+        $.get('/exportreq', {}, (obj_rec) => {
+            console.log("Got it");
+
+            this.setState({data: obj_rec})
+
+            event.preventDefault();
+            // Prepare the file
+            let output;
             // Prepare data:
             let contents = [];
-            contents.push (["State", "Electors"]);
+            contents.push (["address", "county_code","city","county","state","state_code","site_num","date_local","firstMH_O3","firstMV_O3","mean_O3","unit_O3","aqi_O3","firstMH_NO2","firstMV_NO2","mean_NO2","unit_NO2","aqi_NO2","firstMH_CO","firstMV_CO","mean_CO","unit_CO","aqi_CO","firstMH_SO2","firstMV_SO2","mean_SO2","unit_SO2","aqi_SO2"]);
             this.state.data.forEach(row => {
-                contents.push([row.state, row.electors])
+                contents.push([row.address, row.county_code,row.city,row.county,row.state,row.state_code,row.site_num,row.date_local,row.firstMH_O3,row.firstMV_O3,row.mean_O3,row.unit_O3,row.aqi_O3,row.firstMH_NO2,row.firstMV_NO2,row.mean_NO2,row.unit_NO2,row.aqi_NO2,row.firstMH_CO,row.firstMV_CO,row.mean_CO,row.unit_CO,row.aqi_CO,row.firstMH_SO2,row.firstMV_SO2,row.mean_SO2,row.unit_SO2,row.aqi_SO2]);
             });
-            output = this.makeCSV(contents);
 
-        // Download it
-        const blob = new Blob([output]);
-        const fileDownloadUrl = URL.createObjectURL(blob);
-        this.setState ({fileDownloadUrl: fileDownloadUrl},
-            () => {
-                this.dofileDownload.click();
-                URL.revokeObjectURL(fileDownloadUrl);  // free up storage--no longer needed.
-                this.setState({fileDownloadUrl: ""})
-            })
+            output = this.makeCSV(contents);
+            this.setState ({data: []});
+            // Download it
+            const blob = new Blob([output]);
+            const fileDownloadUrl = URL.createObjectURL(blob);
+            this.setState ({fileDownloadUrl: fileDownloadUrl},
+                () => {
+                    this.dofileDownload.click();
+                    URL.revokeObjectURL(fileDownloadUrl);  // free up storage--no longer needed.
+                    this.setState({fileDownloadUrl: ""})
+                })
+
+
+        })
+
+
     }
 
     makeCSV (content) {
@@ -123,160 +126,3 @@ class Home extends Component {
 }
 
 export default Home;
-
-/*
-class App extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const defaultFileType = "json";
-        this.fileNames = {
-            json: "states.json",
-            csv: "states.csv",
-            text: "states.txt"
-        }
-        this.state = {
-            fileType: defaultFileType,
-            fileDownloadUrl: null,
-            status: "",
-            data: [
-                { state: "Arizona",        electors: 11 },
-                { state: "Florida",        electors: 29 },
-                { state: "Iowa",           electors:  6 },
-                { state: "Michigan",       electors: 16 },
-                { state: "North Carolina", electors: 15 },
-                { state: "Ohio",           electors: 18 },
-                { state: "Pennsylvania",   electors: 20 },
-                { state: "Wisconsin",      electors: 10 },
-            ]
-        }
-        this.changeFileType = this.changeFileType.bind(this);
-        this.download = this.download.bind(this);
-        this.upload = this.upload.bind(this);
-        this.openFile = this.openFile.bind(this);
-    }
-
-    changeFileType (event) {
-        const value = event.target.value;
-        this.setState({fileType: value});
-    }
-
-    download (event) {
-        event.preventDefault();
-        // Prepare the file
-        let output;
-        if (this.state.fileType === "json") {
-            output = JSON.stringify({states: this.state.data},
-                null, 4);
-        } else if (this.state.fileType === "csv"){
-            // Prepare data:
-            let contents = [];
-            contents.push (["State", "Electors"]);
-            this.state.data.forEach(row => {
-                contents.push([row.state, row.electors])
-            });
-            output = this.makeCSV(contents);
-        } else if (this.state.fileType === "text"){
-            // Prepare data:
-            output = '';
-            this.state.data.forEach(row => {
-                output += `${row.state}: ${row.electors}\n`
-            });
-        }
-        // Download it
-        const blob = new Blob([output]);
-        const fileDownloadUrl = URL.createObjectURL(blob);
-        this.setState ({fileDownloadUrl: fileDownloadUrl},
-            () => {
-                this.dofileDownload.click();
-                URL.revokeObjectURL(fileDownloadUrl);  // free up storage--no longer needed.
-                this.setState({fileDownloadUrl: ""})
-            })
-    }
-
-
-
-
-    upload() {
-        event.preventDefault();
-        this.dofileUpload.click()
-    }
-
-
-
-    openFile(evt) {
-        let status = []; // Status output
-        const fileObj = evt.target.files[0];
-        const reader = new FileReader();
-
-        let fileloaded = e => {
-            // e.target.result is the file's content as text
-            const fileContents = e.target.result;
-            status.push(`File name: "${fileObj.name}". Length: ${fileContents.length} bytes.`);
-            // Show first 80 characters of the file
-            const first80char = fileContents.substring(0,80);
-            status.push (`First 80 characters of the file:\n${first80char}`)
-            this.setState ({status: status.join("\n")})
-        }
-
-        // Mainline of the method
-        fileloaded = fileloaded.bind(this);
-        reader.onload = fileloaded;
-        reader.readAsText(fileObj);
-    }
-
-    render() {
-        return (
-            <div>
-                <h2>2020 US Swing States</h2>
-                <table>
-                    <thead>
-                    <tr><th>State</th><th>Electors</th></tr>
-                    </thead>
-                    <tbody>
-                    {this.state.data.map(item => (
-                        <tr key={item.state}>
-                            <td>{item.state}</td><td>{item.electors}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-                <form>
-                    <span className="mr">File type:</span>
-                    <select name="fileType"
-                            onChange={this.changeFileType}
-                            value={this.state.fileType}
-                            className="mr"
-                    >
-                        <option value="csv">CSV</option>
-                        <option value="json">JSON</option>
-                        <option value="text">Text</option>
-                    </select>
-
-                    <button onClick={this.download}>
-                        Download the file!
-                    </button>
-
-                    <a className="hidden"
-                       download={this.fileNames[this.state.fileType]}
-                       href={this.state.fileDownloadUrl}
-                       ref={e=>this.dofileDownload = e}
-                    >download it</a>
-
-                    <p><button onClick={this.upload}>
-                        Upload a file!
-                    </button> Only json, csv, and text files are ok.</p>
-
-                    <input type="file" className="hidden"
-                           multiple={false}
-                           accept=".json,.csv,.txt,.text,application/json,text/csv,text/plain"
-                           onChange={evt => this.openFile(evt)}
-                           ref={e=>this.dofileUpload = e}
-                    />
-                </form>
-                <pre className="status">{this.state.status}</pre>
-            </div>
-        )
-    }
-}
-*/
