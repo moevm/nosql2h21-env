@@ -43,13 +43,6 @@ class NewRowWindow extends Component {
     }
 
     post() {
-        for (let key of ['state_code', 'county_code', 'site_num', 'address', 'state', 'county', 'city', 'date_local',
-            'unit_NO2', 'unit_O3', 'unit_SO2', 'unit_CO']) {
-            if (this.state.observation[key] === '') {
-                return;
-            }
-        }
-
         if (this.state.observation['state_code'] === '') {
             alert('Укажите код штата');
             return;
@@ -109,10 +102,12 @@ class NewRowWindow extends Component {
             alert('Укажите единицу измерения CO');
             return;
         }
-        console.log(this.state.observation);
 
-        $.get('/add', {data: this.state.observation}, (err) => {
-            console.log(err);
+        $.post('/add', {data: this.state.observation}, (result) => {
+            if (!result.success) {
+                alert('Ошибка (да, это все сообщение)');
+                console.log(result.error);
+            }
         })
     }
 

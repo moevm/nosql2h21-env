@@ -23,7 +23,7 @@ async function filter_request(states, interval, page, lines) {
                 observation.firstMH_CO AS firstMH_CO, observation.firstMV_CO AS firstMV_CO, observation.mean_CO AS mean_CO, observation.unit_CO AS unit_CO, observation.aqi_CO AS aqi_CO, \
                 observation.firstMH_SO2 AS firstMH_SO2, observation.firstMV_SO2 AS firstMV_SO2, observation.mean_SO2 AS mean_SO2, observation.unit_SO2 AS unit_SO2, observation.aqi_SO2 AS aqi_SO2\
                 SKIP toInteger($skipNumber) LIMIT toInteger($limitNumber)",
-                {state_list: states, min_year: interval.min, max_year: interval.max, skipNumber:skip, limitNumber:lines});
+            {state_list: states, min_year: interval.min, max_year: interval.max, skipNumber:skip, limitNumber:lines});
         return res.records;
     } catch (e) {
         console.log(e);
@@ -103,6 +103,10 @@ async function add_line(data) {
     let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
+    let result = {
+        success: undefined,
+        error: undefined
+    };
     try {
         await session.run("MERGE (address:Address {state: $state, address: $address})\
                                 ON CREATE\
@@ -137,12 +141,13 @@ async function add_line(data) {
                 unit_SO2 : data.unit_SO2, mean_SO2 : data.mean_SO2, firstMV_SO2 : data.firstMV_SO2, firstMH_SO2 : data.firstMH_SO2, aqi_CO : data.aqi_CO,
                 unit_CO : data.unit_CO, mean_CO : data.mean_CO, firstMV_CO : data.firstMV_CO, firstMH_CO : data.firstMH_CO, aqi_SO2 : data.aqi_SO2});
 
-        let err = "Success";
-        return err;
+        result.success = true;
+        return result;
     } catch (e) {
         console.log(e);
-        err = "Error";
-        return err;
+        result.success = false;
+        result.error = e
+        return result;
     } finally {
         await session.close();
         await driver.close();
@@ -208,17 +213,16 @@ router.get('/exportreq', async (req, res) => {
     });
 });
 
-router.get('/add', async (req, res) => {
+router.post('/add', async (req, res) => {
+    if (!req.body) {
+        res.send({
+            success: false,
+            error: 'Missing request body '
+        })
+    }
 
-    let data = req.query.data ||
-        {state_code: 4, county_code:13, site_num: 3002, address: '1645 E ROOSEVELT ST-CENTRAL PHOENIX STN', state: 'Arizona', county: 'Maricopa', city: 'Phoenix', date_local: '2000-04-05',
-            unit_NO2: 'Parts per billion', mean_NO2: '39.5', firstMV_NO2: '68.0', firstMH_NO2: '0', aqi_NO2: '66',
-            unit_O3: 'Parts per million', mean_O3: '0.01025', firstMV_O3: '0.0289999', firstMH_O3: '14', aqi_O3: '25',
-            unit_SO2: 'Parts per billion', mean_SO2: '1.7619049999', firstMV_SO2: '6.0', firstMH_SO2: '2', aqi_SO2: '9.0',
-            unit_CO: 'Parts per million', mean_CO: '1.523077', firstMV_CO: '2.0', firstMH_CO: '2', aqi_CO: '23.0'};
-    add_line(data).then((err) => {
-        res.send(err);
-
+    add_line(req.body.data).then((value) => {
+        res.send(value);
     });
 });
 
