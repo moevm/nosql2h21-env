@@ -88,7 +88,7 @@ class Home extends Component {
         fetch('/api/upload', {
             method: 'POST',
             body: data
-        })
+        }).then(response => response.json())
         .then((result) => console.log(result))
         .catch((err) => console.log(err));
     }
