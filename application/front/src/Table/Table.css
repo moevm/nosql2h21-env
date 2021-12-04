@@ -16,7 +16,7 @@
     border: 5px solid green;
 }
 
-table {
+#data-table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
@@ -24,7 +24,7 @@ table {
     height: 80vh;
 }
 
-table thead tbody {
+#data-table thead tbody {
     display: table;
 }
 
