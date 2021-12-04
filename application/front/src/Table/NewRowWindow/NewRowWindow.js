@@ -113,7 +113,7 @@ class NewRowWindow extends Component {
 
     render() {
         return (
-            <div id={'columns-div'}>
+            <div id={'new-row'}>
                 <h2>Введите параметры наблюдения</h2>
 
                 {columnsLabels.map((element, id) => {
@@ -121,12 +121,15 @@ class NewRowWindow extends Component {
 
 
                     return (
-                        <label key={id}>
-                            {element.label}
+                        <div className={'new-row__input-wrapper'}>
+                            <label key={id}>
+                                {element.label}
 
-                            <input type={type} name={element.value} value={this.state.observation[element.value]}
-                            onChange={(event) => this.updateInput(event)}/>
-                        </label>
+                                <input className={'new-row__input'}
+                                       type={type} name={element.value} value={this.state.observation[element.value]}
+                                       onChange={(event) => this.updateInput(event)}/>
+                            </label>
+                        </div>
                     );
                 })}
 
