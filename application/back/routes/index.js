@@ -321,7 +321,7 @@ router.get('/location', (req, res) => {
 });
 
 router.get('/geolocation', (req, res) => {
-    db_info.get_states_geolocation().then((geolocation) => {
+    db_info.get_geolocation().then((geolocation) => {
         res.send(geolocation);
     });
 });
