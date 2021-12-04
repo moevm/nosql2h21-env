@@ -21,7 +21,7 @@ class Home extends Component {
     }
 
     download () {
-        $.get('/exportreq', {}, (data) => {
+        $.get('/api/exportreq', {}, (data) => {
             // Prepare data:
             let contents = [
                 [
@@ -76,6 +76,23 @@ class Home extends Component {
         return csv;
     }
 
+    upload_csv(event) {
+        let size_lim = 100 * 1024 * 1024;
+        let file = event.target.files[0];
+        if (file.size > size_lim) {
+            // ERROR HANDLER NEEDED
+            return;
+        }
+        let data = new FormData();
+        data.append('new_csv', file);
+        fetch('/api/upload', {
+            method: 'POST',
+            body: data
+        })
+        .then((result) => console.log(result))
+        .catch((err) => console.log(err));
+    }
+
     upload() {
         this.uploader.click();
     }
@@ -128,8 +145,8 @@ class Home extends Component {
                     onClick={this.upload}>Импорт данных</button>
             <input type={'file'} hidden={true}
                    multiple={false}
-                   accept={'.csv'}
-                   onChange={evt => this.open_file(evt)}
+                   accept={'text/csv'}
+                   onChange={evt => this.upload_csv(evt)}
                    ref={element => this.uploader = element}
             />
             <pre className={'status'}>{this.state.status}</pre>

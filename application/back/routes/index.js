@@ -3,6 +3,7 @@ var router = express.Router();
 
 let neo4j = require('neo4j-driver');
 let creds = require("./extras/credentials");
+let file_uploading = require('../file_uploading');
 
 let db_info = require("./extras/db_info");
 
@@ -276,6 +277,21 @@ router.get('/geolocation', (req, res) => {
     db_info.get_states_geolocation().then((geolocation) => {
         res.send(geolocation);
     });
+});
+
+router.post('/upload', file_uploading.single('new_csv'), (req, res) => {
+    try {
+        if (req.file) {
+            console.log(req);
+            res.send(req.file.path);
+            //загрузка файла в БД
+        }
+        else {
+            res.send({msg: "something went wrong"})
+        }
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 
