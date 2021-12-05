@@ -3,6 +3,7 @@ import MultiRangeSlider from '../MultiRangeSlider';
 import './Map.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+import prefix from '../prefix'
 
 
 class Map extends Component {
@@ -16,18 +17,18 @@ class Map extends Component {
                 SO2: false,
                 O3: false
             },
-        }
+        };
 
         this.years = {
             min: 0,
             max: 0,
             current_min: 0,
             current_max: 0,
-        }
+        };
     }
 
     componentDidMount() {
-        $.get('/api/years', {}, (res) => {
+        $.get(prefix + '/years', {}, (res) => {
             let years = res
             years.current_min = years.min
             years.current_max = years.max
@@ -35,7 +36,7 @@ class Map extends Component {
             this.forceUpdate()
 
             this.fetch_data();
-        })
+        });
 
         $("#map-container").html('LOADING...');
     }
@@ -44,12 +45,12 @@ class Map extends Component {
     fetch_data =  debounce(500, false, async () => {
         $("#map-container").html('LOADING...');
 
-        let interval = this.years
+        let interval = this.years;
         if (interval !== undefined) {
             interval = {
                 min: interval.current_min,
                 max: interval.current_max
-            }
+            };
         }
 
         let substance;
@@ -60,23 +61,23 @@ class Map extends Component {
             }
         }
 
-        let states_data = {}
+        let states_data = {};
 
-        $.get('/api/location', {}, (res) => {
+        $.get(prefix + '/location', {}, (res) => {
             for (const key in res) {
-                states_data[key] = {address: res[key]}
+                states_data[key] = {address: res[key]};
             }
         });
 
-        await $.get('/api/map', {substance: substance, interval: interval}, (res) => {
+        await $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
             for (const key in res) {
-                states_data[key].mean = res[key]
+                states_data[key].mean = res[key];
             }
         });
 
         let res_str = "";
         for (const key in states_data) {
-            res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`
+            res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`;
         }
         $("#map-container").html(res_str);
 
@@ -85,15 +86,15 @@ class Map extends Component {
 
     updateYears(current_min, current_max, mouse_down) {
         if (!mouse_down) {
-            this.years.current_min = current_min
-            this.years.current_max = current_max
+            this.years.current_min = current_min;
+            this.years.current_max = current_max;
             this.fetch_data();
         }
     }
 
     updateSubstances(event) {
         if (!event.target.checked) {
-            return
+            return;
         }
 
         let substances = {
@@ -101,9 +102,9 @@ class Map extends Component {
             CO: false,
             SO2: false,
             O3: false
-        }
-        substances[event.target.value] = true
-        this.setState({substances: substances})
+        };
+        substances[event.target.value] = true;
+        this.setState({substances: substances});
         this.fetch_data();
     }
 
@@ -137,12 +138,12 @@ class Map extends Component {
                                         {name}
                                     </label>
                                 </div>
-                            )
+                            );
                         })}
                     </div>
                 </div>
             </div>
-        )
+        );
     };
 }
 

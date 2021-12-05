@@ -1,15 +1,15 @@
 let neo4j = require("neo4j-driver");
-let creds = require("../routes/extras/credentials");
-let filename = "'file:///pollution_us_2000_2016_qm.csv'";
+let creds = require("./credentials");
+let url = require("url")
 
 async function import_initial_data() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
-        let n = await session.run("MATCH (n) RETURN n LIMIT 10", {});
-        if (n.records.length == 0) {
-            await session.run(":auto USING PERIODIC COMMIT 10000 \
-            LOAD CSV WITH HEADERS FROM $filename AS line \
+        let n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
+        if (n.records.length === 0) {
+            await session.run("USING PERIODIC COMMIT 10000 \
+            LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2004_qm.csv' AS line \
             FIELDTERMINATOR ';' \
             MERGE (address:Address {state: line.state, address: line.address}) \
             ON CREATE \
@@ -37,10 +37,13 @@ async function import_initial_data() {
                 firstMV_CO: line.firstMV_CO, \
                 firstMH_CO: line.firstMH_CO, \
                 aqi_CO: line.aqi_CO \
-            }]->(date)", {filename: filename});
+            }]->(date)", {});
         }
+        n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
+        return n;
     } catch (e) {
       console.log(e);
+      return -1;
     } finally {
       await session.close();
       await driver.close();

@@ -1,5 +1,6 @@
 let neo4j = require('neo4j-driver');
-let creds = require("./credentials.js");
+let creds = require("./credentials");
+let url = require("./url")
 // var env = require('node-env-file');
 // env(__dirname + '/.env');
 // // YOU HAVE TO CREATE .env file in current directory with following content:
@@ -12,7 +13,7 @@ let apoc = require('apoc');
 
 
 async function get_states() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (location:Address) RETURN DISTINCT location.state as state", {});
@@ -27,7 +28,7 @@ async function get_states() {
 
 async function get_states_location() {
     let location = get_states().then(async (records) => {
-        let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
         let location = {};
         for (let record of records) {
             let state = record.get("state");
@@ -52,60 +53,34 @@ async function get_states_location() {
     return location;
 }
 
-async function get_states_geolocation() {
-        let state = 'Arizona'
-        console.log(state);
-        let geolocation = get_states_location().then(async (location) => {
-            let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
-            let geolocation = {};
+async function get_geolocation() {
+    let geolocation = get_states_location().then(async (locations) => {
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
+        let geolocation = {};
+        for (let state in locations) {
             let session = driver.session();
-            console.log(location[state]);
             try {
-
-                let res = apoc.query('CALL apoc.spatial.geocodeOnce(\'%locate%\') YIELD location RETURN location.latitude AS latitude, location.longitude AS longitude',  {locate: location[state].toString() }).exec().then(
-                    function (response) {
-                        console.log(1);
-                        console.log(response[0]);
-                        //console.log(response.data.toObject());
-                        //console.log(response.data[0]);
-                        //console.log(response.get('data'));
-                        //console.log(response.get(data));
-                        console.log(1);
-                    },
-                    function (fail) {
-                        console.log(2);
-                        console.log(fail);
-                    }
-                    //geolocation[state] = res.records[0].get("latitude") + " " + res.records[0].get("longitude");
-                );
-
-
-                console.log(3);
-                console.log(res);
-                geolocation[state] = 1;//res.records[0].get("latitude") + " " + res.records[0].get("longitude");
-                //console.log(geolocation[state]);
-                /*let res = await session.run(`CALL apoc.spatial.geocodeOnce('$location')\
-                YIELD location \
-                RETURN location.latitude AS latitude, location.longitude AS longitude`,
-                    {location: location[state]});
-
-                geolocation[state] = res.records[0].get("latitude") + " " + res.records[0].get("longitude");
-                console.log(geolocation[state]);*/
-            } catch (e) {
-                console.log(e);
+                let address = locations[state];
+                let res = await session.run("CALL apoc.spatial.geocodeOnce($address) YIELD location\
+                RETURN location.latitude as latitude, location.longitude as longitude", {address: address});
+                if (res.records.length > 0) {
+                    geolocation[state] = res.records[0].toObject();
+                }
+            } catch (err) {
+                console.log(err);
             } finally {
                 await session.close();
             }
-                await driver.close();
-                return geolocation;
-        });
+        }
+        await driver.close();
+        console.log(geolocation)
         return geolocation;
-
+    });
+    return geolocation;
 }
 
-
 async function get_years() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (date:Date) RETURN max(date.year) as max_year, min(date.year) as min_year", {});
@@ -120,5 +95,5 @@ async function get_years() {
 
 exports.get_states= get_states;
 exports.get_states_location= get_states_location;
-exports.get_states_geolocation= get_states_geolocation;
 exports.get_years = get_years;
+exports.get_geolocation = get_geolocation;

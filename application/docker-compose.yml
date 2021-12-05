@@ -3,10 +3,11 @@ version: "3"
 services:
   neo4j:
     build: ./neo4j
-    restart: always
+    restart: unless-stopped
     volumes:
       - "./neo4j/data:/data"
       - "./neo4j/plugins:/plugins"
+      - "./neo4j/init_db.cypher:/init_db.cypher"
     environment:
       - NEO4J_AUTH=neo4j/1234
       - NEO4J_apoc_export_file_enabled=true
@@ -15,7 +16,7 @@ services:
       - NEO4JLABS_PLUGINS=["apoc"]
   nginx:
     build: ./nginx
-    restart: always
+    restart: unless-stopped
     ports:
       - '3000:80'
     depends_on:
@@ -28,9 +29,13 @@ services:
     environment:
       USER: "neo4j"
       PASSWORD: "1234"
+      DOCKER: "TRUE"
+    restart: unless-stopped
     depends_on:
       - neo4j
   front:
+    environment:
+      - REACT_APP_DOCKER=TRUE
     build: ./front
     volumes:
       - "./front:/app"

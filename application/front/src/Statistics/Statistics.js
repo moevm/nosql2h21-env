@@ -3,12 +3,13 @@ import MultiRangeSlider from '../MultiRangeSlider';
 import './Statistics.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+import prefix from "../prefix";
 
 
 const chart_types = {
     dot: 'Точечная',
     histogram: 'Гистограмма'
-}
+};
 
 
 class Statistics extends Component {
@@ -29,28 +30,28 @@ class Statistics extends Component {
             },
 
             states: []
-        }
+        };
 
         this.years = {
             min: 0,
             max: 0,
             current_min: 0,
             current_max: 0,
-        }
+        };
 
         this.location = "WHOLE COUNTRY";
     }
 
     componentDidMount() {
-        $.get('/api/states', {}, (res) => {
+        $.get(prefix + '/states', {}, (res) => {
             let states = ['WHOLE COUNTRY']
             res.forEach((value) => {
                 states.push(value)
-            })
-            this.setState({states: states})
-        })
+            });
+            this.setState({states: states});
+        });
 
-        $.get('/api/years', {}, (res) => {
+        $.get(prefix + '/years', {}, (res) => {
             let years = res
             years.current_min = years.min
             years.current_max = years.max
@@ -80,7 +81,7 @@ class Statistics extends Component {
         let location = this.location;
 
 
-        $.get('/api/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
+        $.get(prefix + '/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
             let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`
@@ -90,12 +91,12 @@ class Statistics extends Component {
     }
 
     get_hist_data() {
-        let interval = this.years
+        let interval = this.years;
         if (interval !== undefined) {
             interval = {
                 min: interval.current_min,
                 max: interval.current_max
-            }
+            };
         }
         let substance;
         for (const key in this.state.substances) {
@@ -105,37 +106,37 @@ class Statistics extends Component {
             }
         }
 
-        $.get('/api/stats/hist', {substance: substance, interval: interval}, (res) => {
+        $.get(prefix + '/stats/hist', {substance: substance, interval: interval}, (res) => {
             let str_res = ""
             for (const key in res) {
-                str_res += `<p>${key}: ${res[key]}</p>`
+                str_res += `<p>${key}: ${res[key]}</p>`;
             }
             $("#statistics-container").html(str_res);
-        })
+        });
     }
 
     fetch_data = debounce(500, false, () => {
         $("#statistics-container").html('LOADING...');
 
         if (this.state.types.dot) {
-            this.get_plots_data()
+            this.get_plots_data();
         } else {
-            this.get_hist_data()
+            this.get_hist_data();
         }
     })
 
     updateYears(current_min, current_max, mouse_down) {
         if (!mouse_down) {
-            this.years.current_min = current_min
-            this.years.current_max = current_max
+            this.years.current_min = current_min;
+            this.years.current_max = current_max;
 
-            this.fetch_data()
+            this.fetch_data();
         }
     }
 
     updateSubstances(event) {
         if (!event.target.checked) {
-            return
+            return;
         }
 
         let substances = {
@@ -143,35 +144,35 @@ class Statistics extends Component {
             CO: false,
             SO2: false,
             O3: false
-        }
-        substances[event.target.value] = true
-        this.setState({substances: substances})
+        };
+        substances[event.target.value] = true;
+        this.setState({substances: substances});
 
-        this.fetch_data()
+        this.fetch_data();
     }
 
     updateTypes(event) {
         if (!event.target.checked) {
-            return
+            return;
         }
 
         let types = {
             dot: false,
             histogram: false
-        }
-        types[event.target.value] = true
-        this.setState({types: types})
+        };
+        types[event.target.value] = true;
+        this.setState({types: types});
         if (types.dot) {
-            this.location = "WHOLE COUNTRY"
+            this.location = "WHOLE COUNTRY";
         }
 
-        this.fetch_data()
+        this.fetch_data();
     }
 
     updateLocation(event) {
-        this.location = event.target.value
+        this.location = event.target.value;
         if (this.state.types.dot) {
-            this.fetch_data()
+            this.fetch_data();
         }
     }
 
@@ -206,7 +207,7 @@ class Statistics extends Component {
                                         {name}
                                     </label>
                                 </div>
-                            )
+                            );
                         })}
                     </div>
 
@@ -222,7 +223,7 @@ class Statistics extends Component {
                                         {chart_types[name]}
                                     </label>
                                 </div>
-                            )
+                            );
                         })}
                     </div>
                     {this.state.types.dot &&
@@ -239,7 +240,7 @@ class Statistics extends Component {
 
                 </div>
             </div>
-        )
+        );
     };
 }
 
