@@ -6,9 +6,22 @@ import Statistics from './Statistics/Statistics';
 import Table from './Table/Table'
 import './App.css';
 import house from './house.svg'
+import logo from './logo.svg'
 
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            block: false
+        };
+    }
+
+    block(check) {
+        this.setState({block: check});
+    }
+
     house_button_clicked = ( event ) => {
         if( event.button === 0 ) {
             window.location.assign('/');
@@ -46,6 +59,21 @@ class App extends Component {
     }
 
     render() {
+        let block = '';
+        if (this.state.block) {
+            block = (
+                <div className="App">
+                    <header className="App-header">
+                        <img src={logo} className="App-logo" alt="logo" />
+                        <p>
+                            Loading... Please Wait...
+                        </p>
+                    </header>
+                </div>
+            );
+        }
+
+
         return (
             <div>
                 <div id='site-header' role='banner'>
@@ -66,8 +94,9 @@ class App extends Component {
                         </Routes>
                     </BrowserRouter>
                 </div>
+                {block}
             </div>
-        )
+        );
     };
 }
 
