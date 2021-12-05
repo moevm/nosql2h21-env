@@ -2,13 +2,14 @@ var express = require('express');
 var router = express.Router();
 
 let neo4j = require('neo4j-driver');
-let creds = require("./extras/credentials.json");
+let creds = require("./extras/credentials");
+let url = require("./extras/url")
 
 let db_info = require("./extras/db_info");
 
 async function get_hist_data(substance, interval) {
     let hist_data = db_info.get_states().then(async (records) => {
-        let driver = neo4j.driver("bolt://localhost", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
         let hist_data = {};
         for (let record of records) {
             let state = record.get("state");
@@ -36,7 +37,7 @@ async function get_hist_data(substance, interval) {
 
 async function get_plot_data(state, substance, interval) {
     // return an object {month-year: conc}
-    let driver = neo4j.driver("bolt://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let plot_data = {};
     for (let year = interval.min; year <= interval.max; year++) {
         for (let month = 1; month <= 12; month++) {

@@ -3,6 +3,7 @@ import MultiRangeSlider from '../MultiRangeSlider';
 import './Statistics.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+import prefix from "../prefix";
 
 
 const chart_types = {
@@ -42,21 +43,21 @@ class Statistics extends Component {
     }
 
     componentDidMount() {
-        $.get('/states', {}, (res) => {
-            let states = ['WHOLE COUNTRY'];
+        $.get(prefix + '/states', {}, (res) => {
+            let states = ['WHOLE COUNTRY']
             res.forEach((value) => {
                 states.push(value)
             });
             this.setState({states: states});
         });
 
-        $.get('/years', {}, (res) => {
-            let years = res;
-            years.current_min = years.min;
-            years.current_max = years.max;
-            this.years = years;
-            this.forceUpdate();
-        });
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res
+            years.current_min = years.min
+            years.current_max = years.max
+            this.years = years
+            this.forceUpdate()
+        })
 
         $("#statistics-container").html('LOADING...');
     }
@@ -80,7 +81,7 @@ class Statistics extends Component {
         let location = this.location;
 
 
-        $.get('/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
+        $.get(prefix + '/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
             let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`
@@ -105,8 +106,8 @@ class Statistics extends Component {
             }
         }
 
-        $.get('/stats/hist', {substance: substance, interval: interval}, (res) => {
-            let str_res = "";
+        $.get(prefix + '/stats/hist', {substance: substance, interval: interval}, (res) => {
+            let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`;
             }

@@ -7,6 +7,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import {columnsMap} from './columnsOptions'
 import './Table.css';
 import $ from "jquery"
+import prefix from "../prefix";
 
 
 const TABLE_PAGE_STATUS = {
@@ -73,19 +74,20 @@ class Table extends Component {
     componentDidMount() {
         this.filter();
 
-        $.get('states', {}, (res) => {
-            let states = [];
+        $.get(prefix + '/states', {}, (res) => {
+            console.log(res)
+            let states = []
             res.forEach((value) => {
                 states.push({name: value, check: true})
             });
             this.states = states;
         })
 
-        $.get('years', {}, (res) => {
-            let years = res;
-            years.current_min = years.min;
-            years.current_max = years.max;
-            this.years = years;
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res
+            years.current_min = years.min
+            years.current_max = years.max
+            this.years = years
         })
     }
 
@@ -108,8 +110,8 @@ class Table extends Component {
             };
         }
 
-        $.get('filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
-            this.setState({data: this.state.data.concat(res)});
+        $.get(prefix + '/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
+            this.setState({data: this.state.data.concat(res)})
         })
     }
 

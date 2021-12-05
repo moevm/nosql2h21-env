@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  neo4j:
+    build: ./neo4j
+    restart: unless-stopped
+    volumes:
+      - "./neo4j/data:/data"
+      - "./neo4j/plugins:/plugins"
+      - "./neo4j/init_db.cypher:/init_db.cypher"
+    environment:
+      - NEO4J_AUTH=neo4j/1234
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4JLABS_PLUGINS=["apoc"]
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - '3000:80'
+    depends_on:
+      - back
+      - front
+  back:
+    build: ./back
+    volumes:
+      - "./back:/app"
+    environment:
+      USER: "neo4j"
+      PASSWORD: "1234"
+      DOCKER: "TRUE"
+    restart: unless-stopped
+    depends_on:
+      - neo4j
+  front:
+    environment:
+      - REACT_APP_DOCKER=TRUE
+    build: ./front
+    volumes:
+      - "./front:/app"

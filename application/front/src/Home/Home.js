@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './Home.css';
 import $ from "jquery";
+import prefix from '../prefix'
 
 
 class Home extends Component {
@@ -17,11 +18,11 @@ class Home extends Component {
 
         this.download = this.download.bind(this);
         this.upload = this.upload.bind(this);
-        this.open_file = this.open_file.bind(this);
+        // this.open_file = this.open_file.bind(this);
     }
 
     download () {
-        $.get('/exportreq', {}, (data) => {
+        $.get(prefix + '/exportreq', {}, (data) => {
             // Prepare data:
             let contents = [
                 [
@@ -76,38 +77,25 @@ class Home extends Component {
         return csv;
     }
 
-    upload() {
-        this.uploader.click();
+    upload_csv(event) {
+        let size_lim = 100 * 1024 * 1024;
+        let file = event.target.files[0];
+        if (file.size > size_lim) {
+            // ERROR HANDLER NEEDED
+            return;
+        }
+        let data = new FormData();
+        data.append('new_csv', file);
+        fetch('/api/upload', {
+            method: 'POST',
+            body: data
+        }).then(response => response.json())
+        .then((result) => console.log(result))
+        .catch((err) => console.log(err));
     }
 
-    open_file(event) {
-        let status = [];    // Status output
-        const file_object = event.target.files[0];
-        const reader = new FileReader();
-        //this.setState ({file_URL: fileDownloadUrl});
-
-
-        let loaded_callback = (event) => {
-            this.setState({
-                file: file_object,
-                file_URL: reader.result
-            });
-            console.log(reader.result);
-            // e.target.result is the file's content as text
-            const contents = event.target.result;
-            status.push(`File name: '${file_object.name}'. Length: ${contents.length} bytes.`);
-
-            const beginning = contents.substring(0,50);
-            status.push(`First 50 characters of the file:\n${beginning}`);
-            this.setState({status: status.join('\n')});
-        }
-
-        // Mainline of the method
-        loaded_callback = loaded_callback.bind(this);
-        reader.onload = loaded_callback;
-        reader.readAsDataURL(file_object);
-
-        //reader.readAsText(file_object);
+    upload() {
+        this.uploader.click();
     }
 
     render() {
@@ -128,8 +116,8 @@ class Home extends Component {
                     onClick={this.upload}>Импорт данных</button>
             <input type={'file'} hidden={true}
                    multiple={false}
-                   accept={'.csv'}
-                   onChange={evt => this.open_file(evt)}
+                   accept={'text/csv'}
+                   onChange={evt => this.upload_csv(evt)}
                    ref={element => this.uploader = element}
             />
             <pre className={'status'}>{this.state.status}</pre>

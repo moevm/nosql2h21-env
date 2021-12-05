@@ -3,6 +3,7 @@ import MultiRangeSlider from '../MultiRangeSlider';
 import './Map.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+import prefix from '../prefix'
 
 
 class Map extends Component {
@@ -27,12 +28,12 @@ class Map extends Component {
     }
 
     componentDidMount() {
-        $.get('/years', {}, (res) => {
-            let years = res;
-            years.current_min = years.min;
-            years.current_max = years.max;
-            this.years = years;
-            this.forceUpdate();
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res
+            years.current_min = years.min
+            years.current_max = years.max
+            this.years = years
+            this.forceUpdate()
 
             this.fetch_data();
         });
@@ -62,13 +63,13 @@ class Map extends Component {
 
         let states_data = {};
 
-        $.get('/location', {}, (res) => {
+        $.get(prefix + '/location', {}, (res) => {
             for (const key in res) {
                 states_data[key] = {address: res[key]};
             }
         });
 
-        await $.get('/map', {substance: substance, interval: interval}, (res) => {
+        await $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
             for (const key in res) {
                 states_data[key].mean = res[key];
             }

@@ -103,7 +103,7 @@ class NewRowWindow extends Component {
             return;
         }
 
-        $.post('/add', {data: this.state.observation}, (result) => {
+        $.post('/api/add', {data: this.state.observation}, (result) => {
             if (!result.success) {
                 alert('Ошибка (да, это все сообщение)');
                 console.log(result.error);

@@ -2,12 +2,14 @@ var express = require('express');
 var router = express.Router();
 
 let neo4j = require('neo4j-driver');
-let creds = require("./extras/credentials.json");
+let creds = require("./extras/credentials");
+let file_uploading = require('../file_uploading');
 
 let db_info = require("./extras/db_info");
+let init_db = require("./extras/init_db");
 
 async function filter_request(states, interval, page, lines) {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     lines = parseInt(lines);
@@ -34,7 +36,7 @@ async function filter_request(states, interval, page, lines) {
 }
 
 async function export_request() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     try {
@@ -59,7 +61,7 @@ async function export_request() {
 
 async function map_request(substance, interval) {
     let map_data = db_info.get_states().then(async (records) => {
-        let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
         let map_data = {};
         let zero = 0;
         for (let record of records) {
@@ -100,7 +102,7 @@ async function map_request(substance, interval) {
 }
 
 async function add_line(data) {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     let result = {
@@ -154,8 +156,60 @@ async function add_line(data) {
     }
 }
 
+async function import_data(filename) {
+    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let session = driver.session();
+    try {
+        await session.run("MATCH (n) DETACH DELETE n", {});
+        let filepath = `http://back:8000/uploads/${filename}`;
+        await session.run("USING PERIODIC COMMIT 10000 \
+        LOAD CSV WITH HEADERS FROM $fpath AS line \
+        FIELDTERMINATOR ';' \
+        MERGE (address:Address {state: line.state, address: line.address}) \
+        ON CREATE \
+            SET address.state_code = toInteger(line.state_code), address.county_code = toInteger(line.county_code), \
+            address.site_num = toInteger(line.site_num), address.county = line.county, address.city = line.city \
+        MERGE (date:Date {date_local: line.date_local, year: toInteger(left(line.date_local, 4))}) \
+        CREATE (address)-[:MEASURED { \
+            unit_NO2: line.unit_NO2, \
+            mean_NO2: line.mean_NO2, \
+            firstMV_NO2: line.firstMV_NO2, \
+            firstMH_NO2: line.firstMH_NO2, \
+            aqi_NO2: line.aqi_NO2, \
+            unit_O3: line.unit_O3, \
+            mean_O3: line.mean_O3, \
+            firstMV_O3: line.firstMV_O3, \
+            firstMH_O3: line.firstMH_O3, \
+            aqi_O3: line.aqi_O3, \
+            unit_SO2: line.unit_SO2, \
+            mean_SO2: line.mean_SO2, \
+            firstMV_SO2: line.firstMV_SO2, \
+            firstMH_SO2: line.firstMH_SO2, \
+            aqi_SO2: line.aqi_SO2, \
+            unit_CO: line.unit_CO, \
+            mean_CO: line.mean_CO, \
+            firstMV_CO: line.firstMV_CO, \
+            firstMH_CO: line.firstMH_CO, \
+            aqi_CO: line.aqi_CO \
+        }]->(date)", {fpath: filepath});
+        let res = await session.run("MATCH (n) RETURN n LIMIT 1", {});
+        return res.records.length;
+    } catch (e) {
+        console.log(e);
+        return -1;
+    } finally {
+        await session.close();
+        await driver.close();
+    }
+}
+
 router.get('/', function(req, res) {
-    res.render('index', { title: 'Express' });
+    init_db.import_initial_data().then(n => {
+        res.send(n > 0);
+    })
+    .catch(err => {
+        res.send(false);
+    });
 });
 
 router.get('/filter', async (req, res) => {
@@ -277,9 +331,26 @@ router.get('/location', (req, res) => {
 });
 
 router.get('/geolocation', (req, res) => {
-    db_info.get_states_geolocation().then((geolocation) => {
+    db_info.get_geolocation().then((geolocation) => {
         res.send(geolocation);
     });
+});
+
+router.post('/upload', file_uploading.single('new_csv'), (req, res) => {
+    try {
+        if (req.file) {
+            import_data(req.file.filename)
+            .then((n) => {
+                res.send(n > 0);
+            })
+            .catch(err => res.send(false));
+        }
+        else {
+            res.send(false);
+        }
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 
