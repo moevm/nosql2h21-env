@@ -43,23 +43,33 @@ class Statistics extends Component {
     }
 
     componentDidMount() {
-        $.get(prefix + '/states', {}, (res) => {
-            let states = ['WHOLE COUNTRY']
-            res.forEach((value) => {
-                states.push(value)
-            });
-            this.setState({states: states});
-        });
+        this.props.block(true);
 
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-            this.forceUpdate()
-        })
+        let promises = []
+        promises.push(
+            $.get(prefix + '/years', {}, (res) => {
+                let years = res;
+                years.current_min = years.min;
+                years.current_max = years.max;
+                this.years = years;
+                this.forceUpdate();
+            })
+        );
+        promises.push(
+            $.get(prefix + '/states', {}, (res) => {
+                let states = ['WHOLE COUNTRY'];
+                res.forEach((value) => {
+                    states.push(value);
+                });
+                this.setState({states: states});
+            })
+        );
 
         $("#statistics-container").html('LOADING...');
+
+        Promise.all(promises).then(() => {
+            this.fetch_data();
+        })
     }
 
 
@@ -80,13 +90,14 @@ class Statistics extends Component {
         }
         let location = this.location;
 
-
         $.get(prefix + '/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
             let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`
             }
             $("#statistics-container").html(str_res);
+            console.log('FALSE')
+            this.props.block(false);
         })
     }
 
@@ -112,10 +123,13 @@ class Statistics extends Component {
                 str_res += `<p>${key}: ${res[key]}</p>`;
             }
             $("#statistics-container").html(str_res);
+            this.props.block(false);
         });
     }
 
     fetch_data = debounce(500, false, () => {
+        this.props.block(true);
+
         $("#statistics-container").html('LOADING...');
 
         if (this.state.types.dot) {
@@ -198,8 +212,8 @@ class Statistics extends Component {
                     <div className={'statistics-radio-box'}>
                         {Object.keys(this.state.substances).map((name) => {
                             return (
-                                <div className={'statistics-radio-wrapper'}>
-                                    <label key={name}>
+                                <div className={'statistics-radio-wrapper'} key={name}>
+                                    <label>
                                         <input type='radio' value={name} checked={this.state.substances[name]}
                                                onChange={(e) => {this.updateSubstances(e)}}
                                                className={'statistics-radio-input'}
@@ -214,8 +228,8 @@ class Statistics extends Component {
                     <div className={'statistics-radio-box'}>
                         {Object.keys(this.state.types).map((name) => {
                             return (
-                                <div className={'statistics-radio-wrapper'}>
-                                    <label key={name}>
+                                <div className={'statistics-radio-wrapper'} key={name}>
+                                    <label>
                                         <input type='radio' value={name} checked={this.state.types[name]}
                                                onChange={(e) => {this.updateTypes(e)}}
                                                className={'statistics-radio-input'}
@@ -232,7 +246,7 @@ class Statistics extends Component {
                         <select className={'statistics-select'}
                                 onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
-                                return <option value={state}>{state}</option>
+                                return <option value={state} key={state}>{state}</option>
                             })}
                         </select>
                     </div>

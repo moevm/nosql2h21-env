@@ -1,106 +1,109 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { Component } from 'react'
 import classnames from "classnames";
 import PropTypes from "prop-types";
 import "./MultiRangeSlider.css";
 
 
-const MultiRangeSlider = ({ min, max, current_min, current_max, onChange }) => {
-    const [minVal, setMinVal] = useState(min);
-    const [maxVal, setMaxVal] = useState(max);
-    const [minValCurr, setMinValCurr] = useState(current_min);
-    const [maxValCurr, setMaxValCurr] = useState(current_max);
-    const [mouseDown, setMouseDown] = useState(false);
-    const minValRef = useRef(null);
-    const maxValRef = useRef(null);
-    const range = useRef(null);
+class MultiRangeSlider extends Component {
+    constructor(props) {
+        super(props);
 
-    // Convert to percentage
-    const getPercent = useCallback(
-        (value) => Math.round(((value - minVal) / (maxVal - minVal)) * 100),
-        [minVal, maxVal]
-    );
+        this.state = {
+            minVal: props.min,
+            maxVal: props.max,
+            minValCurr: props.current_min,
+            maxValCurr: props.current_max,
+            mouseDown: false
+        };
 
-    useEffect(() => {
-        setMinVal(min)
-        setMaxVal(max)
-        setMinValCurr(current_min)
-        setMaxValCurr(current_max)
-    }, [min, max, current_min, current_max]);
+        this.minValRef = React.createRef();
+        this.maxValRef = React.createRef();
+        this.range = React.createRef();
 
-    // Set width of the range to decrease from the left side
-    useEffect(() => {
-        if (maxValRef.current) {
-            const minPercent = getPercent(minValCurr);
-            const maxPercent = getPercent(+maxValRef.current.value); // Preceding with '+' converts the value from type string to type number
+        this.setMinValCurr = this.setMinValCurr.bind(this);
+        this.setMaxValCurr = this.setMaxValCurr.bind(this);
+        this.setMouseDown = this.setMouseDown.bind(this);
+    }
 
-            if (range.current) {
-                range.current.style.left = `${minPercent}%`;
-                range.current.style.width = `${maxPercent - minPercent}%`;
-            }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.minVal !== this.props.min || this.state.maxVal !== this.props.max) {
+            this.setState({
+                minVal: this.props.min,
+                maxVal: this.props.max,
+                minValCurr: this.props.current_min,
+                maxValCurr: this.props.current_max
+            });
         }
-    }, [minValCurr, getPercent]);
+    }
 
-    // Set width of the range to decrease from the right side
-    useEffect(() => {
-        if (minValRef.current) {
-            const minPercent = getPercent(+minValRef.current.value);
-            const maxPercent = getPercent(maxValCurr);
+    setMinValCurr(value) {
+        this.setState({minValCurr: value}, () => {
+            this.callback();
+        });
+    }
 
-            if (range.current) {
-                range.current.style.width = `${maxPercent - minPercent}%`;
-            }
-        }
-    }, [maxValCurr, getPercent]);
+    setMaxValCurr(value) {
+        this.setState({maxValCurr: value}, () => {
+            this.callback();
+        });
+    }
 
-    // Get min and max values when their state changes
-    useEffect(() => {
-        onChange({ min: minValCurr, max: maxValCurr, mouseDown: mouseDown });
-    }, [minValCurr, maxValCurr, mouseDown, onChange]);
+    setMouseDown(check) {
+        this.setState({mouseDown: check}, () => {
+            this.callback();
+        });
+    }
 
-    return (
-        <div className="container">
-            <input
-                type="range"
-                min={min}
-                max={max}
-                value={minValCurr}
-                ref={minValRef}
-                onChange={(event) => {
-                    const value = Math.min(+event.target.value, +maxValCurr);
-                    setMinValCurr(value);
-                    event.target.value = value.toString();
-                }}
-                onMouseDown={() => {setMouseDown(true)}}
-                onMouseUp={() => {setMouseDown(false)}}
-                className={classnames("thumb thumb--zindex-3", {
-                    "thumb--zindex-5": minValCurr > max - 100
-                })}
-            />
-            <input
-                type="range"
-                min={min}
-                max={max}
-                value={maxValCurr}
-                ref={maxValRef}
-                onChange={(event) => {
-                    const value = Math.max(+event.target.value, +minValCurr);
-                    setMaxValCurr(value);
-                    event.target.value = value.toString();
-                }}
-                onMouseDown={() => {setMouseDown(true)}}
-                onMouseUp={() => {setMouseDown(false)}}
-                className="thumb thumb--zindex-4"
-            />
+    callback() {
+        this.props.onChange(this.state.minValCurr, this.state.maxValCurr, this.state.mouseDown);
+    }
 
-            <div className="slider">
-                <div className="slider__track" />
-                <div ref={range} className="slider__range" />
-                <div className="slider__left-value">{minValCurr}</div>
-                <div className="slider__right-value">{maxValCurr}</div>
+    render() {
+        return (
+            <div className="container">
+                <input
+                    type="range"
+                    min={this.state.minVal}
+                    max={this.state.maxVal}
+                    value={this.state.minValCurr}
+                    ref={this.minValRef}
+                    onChange={(event) => {
+                        const value = Math.min(+event.target.value, +this.state.maxValCurr);
+                        this.setMinValCurr(value);
+                        event.target.value = value.toString();
+                    }}
+                    onMouseDown={() => {this.setMouseDown(true)}}
+                    onMouseUp={() => {this.setMouseDown(false)}}
+                    className={classnames("thumb thumb--zindex-3", {
+                        "thumb--zindex-5": this.state.minValCurr > this.state.maxVal - 100
+                    })}
+                />
+                <input
+                    type="range"
+                    min={this.state.minVal}
+                    max={this.state.maxVal}
+                    value={this.state.maxValCurr}
+                    ref={this.maxValRef}
+                    onChange={(event) => {
+                        const value = Math.max(+event.target.value, +this.state.minValCurr);
+                        this.setMaxValCurr(value);
+                        event.target.value = value.toString();
+                    }}
+                    onMouseDown={() => {this.setMouseDown(true)}}
+                    onMouseUp={() => {this.setMouseDown(false)}}
+                    className="thumb thumb--zindex-4"
+                />
+
+                <div className="slider">
+                    <div className="slider__track" />
+                    <div ref={this.range} className="slider__range" />
+                    <div className="slider__left-value">{this.state.minValCurr}</div>
+                    <div className="slider__right-value">{this.state.maxValCurr}</div>
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    }
+}
 
 MultiRangeSlider.propTypes = {
     min: PropTypes.number.isRequired,
