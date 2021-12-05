@@ -1,6 +1,6 @@
 let neo4j = require("neo4j-driver");
 let creds = require("./credentials");
-let url = require("url")
+let url = require("./url");
 
 async function import_initial_data() {
     let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));

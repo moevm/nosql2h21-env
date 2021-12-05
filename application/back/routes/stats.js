@@ -97,7 +97,6 @@ router.get("/plots", async (req, res) => {
     }
 
     get_plot_data(state, substance, interval).then((plot_data) => {
-        console.log(plot_data);
         res.send(plot_data);
     });
 });

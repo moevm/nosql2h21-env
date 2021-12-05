@@ -5,7 +5,7 @@ ENV REACT_APP_DOCKER=$REACT_APP_DOCKER
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY ["package.json", "./"]
 RUN npm install
 
 COPY . .

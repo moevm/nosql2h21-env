@@ -332,7 +332,13 @@ router.get('/location', (req, res) => {
 });
 
 router.get('/geolocation', (req, res) => {
-    db_info.get_geolocation().then((geolocation) => {
+    if (!req.query || !req.query.address) {
+        res.send({});
+        return;
+    }
+    console.log(req.query.address);
+    db_info.get_geolocation(req.query.address).then((geolocation) => {
+        console.log(geolocation);
         res.send(geolocation);
     });
 });

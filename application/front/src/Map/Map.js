@@ -63,9 +63,12 @@ class Map extends Component {
 
         let states_data = {};
 
-        $.get(prefix + '/location', {}, (res) => {
-            for (const key in res) {
-                states_data[key] = {address: res[key]};
+        $.get(prefix + '/location', {}, (locations) => {
+            for (const key in locations) {
+                $.get(prefix + '/geolocation', {address: locations[key]}, (res) => {
+                    console.log(res);
+                    states_data[key] = res || {};
+                });
             }
         });
 
@@ -77,7 +80,8 @@ class Map extends Component {
 
         let res_str = "";
         for (const key in states_data) {
-            res_str += `<p>${key}: {address: ${states_data[key]['address']}, mean: ${states_data[key]['mean']}}</p>`;
+            res_str += `<p>${key}: {latitude: ${states_data[key]['latitude']}, \
+            longitude: ${states_data[key]['longitude']}, mean: ${states_data[key]['mean']}}</p>`;
         }
         $("#map-container").html(res_str);
 
