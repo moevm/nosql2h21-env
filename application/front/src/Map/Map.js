@@ -42,7 +42,7 @@ class Map extends Component {
     }
 
 
-    fetch_data =  debounce(500, false, async () => {
+    fetch_data =  debounce(500, false, () => {
         $("#map-container").html('LOADING...');
 
         let interval = this.years;
@@ -63,29 +63,33 @@ class Map extends Component {
 
         let states_data = {};
 
-        $.get(prefix + '/location', {}, (locations) => {
+        $.get(prefix + '/location', {}, async (locations) => {
+            let promises = []
             for (const key in locations) {
-                $.get(prefix + '/geolocation', {address: locations[key]}, (res) => {
-                    console.log(res);
-                    states_data[key] = res || {};
+                promises.push(
+                    $.get(prefix + '/geolocation', {address: locations[key]}, (res) => {
+                        states_data[key] = res || {};
+                    })
+                );
+            }
+
+            Promise.all(promises).then(() => {
+                $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
+                    for (const key in res) {
+                        states_data[key].mean = res[key];
+                    }
+
+                    let res_str = "";
+                    for (const key in states_data) {
+                        res_str += `<p>${key}: {latitude: ${states_data[key]['latitude']}, 
+                                longitude: ${states_data[key]['longitude']}, mean: ${states_data[key]['mean']}}</p>`;
+                    }
+                    $("#map-container").html(res_str);
+
+                    this.states_data = states_data;
                 });
-            }
+            })
         });
-
-        await $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
-            for (const key in res) {
-                states_data[key].mean = res[key];
-            }
-        });
-
-        let res_str = "";
-        for (const key in states_data) {
-            res_str += `<p>${key}: {latitude: ${states_data[key]['latitude']}, \
-            longitude: ${states_data[key]['longitude']}, mean: ${states_data[key]['mean']}}</p>`;
-        }
-        $("#map-container").html(res_str);
-
-        this.states_data = states_data;
     })
 
     updateYears(current_min, current_max, mouse_down) {
