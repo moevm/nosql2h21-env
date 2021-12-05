@@ -104,8 +104,8 @@ class App extends Component {
                     <BrowserRouter>
                         <Routes>
                             <Route path='/' element={<Home block={this.block}/>} />
-                            <Route path='/map' element={<Map/>} />
-                            <Route path='/statistics' element={<Statistics/>} />
+                            <Route path='/map' element={<Map block={this.block}/>} />
+                            <Route path='/statistics' element={<Statistics block={this.block}/>} />
                             <Route path='/table' element={<Table/>} />
                         </Routes>
                     </BrowserRouter>

@@ -22,6 +22,7 @@ class Home extends Component {
     }
 
     download () {
+        this.props.block(true)
         $.get(prefix + '/exportreq', {}, (data) => {
             // Prepare data:
             let contents = [
@@ -55,6 +56,7 @@ class Home extends Component {
                 URL.revokeObjectURL(fileDownloadUrl);   // free up storage – no longer needed.
                 this.setState({download_URL: ''});
             })
+            this.props.block(false)
         })
     }
 
@@ -62,7 +64,7 @@ class Home extends Component {
         let csv = '';
         content.forEach(value => {
             value.forEach((item, i) => {
-                let innerValue = item === null ? '' : item.toString();
+                let innerValue = (item === null || item === undefined) ? '' : item.toString();
                 let result = innerValue.replace(/"/g, '""');
                 if (result.search(/([",\n])/g) >= 0) {
                     result = '"' + result + '"';
