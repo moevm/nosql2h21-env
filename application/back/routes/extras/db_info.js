@@ -1,15 +1,6 @@
 let neo4j = require('neo4j-driver');
 let creds = require("./credentials");
 let url = require("./url")
-// var env = require('node-env-file');
-// env(__dirname + '/.env');
-// // YOU HAVE TO CREATE .env file in current directory with following content:
-// //NEO4J_PROTOCOL=http
-// // NEO4J_HOST=127.0.0.1
-// // NEO4J_PORT=7474
-// // NEO4J_USERNAME=neo4j
-// // NEO4J_PASSWORD=your neo4j password
-let apoc = require('apoc');
 
 
 async function get_states() {
@@ -53,30 +44,23 @@ async function get_states_location() {
     return location;
 }
 
-async function get_geolocation() {
-    let geolocation = get_states_location().then(async (locations) => {
-        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
-        let geolocation = {};
-        for (let state in locations) {
-            let session = driver.session();
-            try {
-                let address = locations[state];
-                let res = await session.run("CALL apoc.spatial.geocodeOnce($address) YIELD location\
-                RETURN location.latitude as latitude, location.longitude as longitude", {address: address});
-                if (res.records.length > 0) {
-                    geolocation[state] = res.records[0].toObject();
-                }
-            } catch (err) {
-                console.log(err);
-            } finally {
-                await session.close();
-            }
+async function get_geolocation(address) {
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
+    let session = driver.session();
+    let geolocation;
+    try {
+        let res = await session.run("CALL apoc.spatial.geocodeOnce($address) YIELD location\
+        RETURN location.latitude as latitude, location.longitude as longitude", {address: address});
+        if (res.records.length > 0) {
+            geolocation = res.records[0].toObject();
         }
+    } catch (err) {
+        console.log(err);
+    } finally {
+        await session.close();
         await driver.close();
-        console.log(geolocation)
         return geolocation;
-    });
-    return geolocation;
+    }
 }
 
 async function get_years() {
