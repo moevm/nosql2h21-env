@@ -44,6 +44,8 @@ class Map extends Component {
 
 
     fetch_data =  debounce(500, false, () => {
+        this.props.block(true);
+
         $("#map-container").html('LOADING...');
 
         let interval = this.years;
@@ -75,6 +77,7 @@ class Map extends Component {
                 }
                 $("#map-container").html(res_str);
 
+                this.props.block(false);
             });
         })
     })

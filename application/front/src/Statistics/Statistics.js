@@ -32,33 +32,54 @@ class Statistics extends Component {
             states: []
         };
 
-        this.years = Object.assign({}, this.props.years);
-        this.years.current_min = this.years.min
-        this.years.current_max = this.years.max
+        this.years = {
+            min: 0,
+            max: 0,
+            current_min: 0,
+            current_max: 0,
+        };
 
         this.location = "WHOLE COUNTRY";
     }
 
     componentDidMount() {
-        $.get(prefix + '/states', {}, (res) => {
-            let states = ['WHOLE COUNTRY'];
-            res.forEach((value) => {
-                states.push(value);
-            });
-            this.setState({states: states});
-        });
+        this.props.block(true);
+
+        let promises = []
+        promises.push(
+            $.get(prefix + '/years', {}, (res) => {
+                let years = res;
+                years.current_min = years.min;
+                years.current_max = years.max;
+                this.years = years;
+                this.forceUpdate();
+            })
+        );
+        promises.push(
+            $.get(prefix + '/states', {}, (res) => {
+                let states = ['WHOLE COUNTRY'];
+                res.forEach((value) => {
+                    states.push(value);
+                });
+                this.setState({states: states});
+            })
+        );
 
         $("#statistics-container").html('LOADING...');
+
+        Promise.all(promises).then(() => {
+            this.fetch_data();
+        })
     }
 
 
     get_plots_data() {
-        let interval = this.years;
+        let interval = this.years
         if (interval !== undefined) {
             interval = {
                 min: interval.current_min,
                 max: interval.current_max
-            };
+            }
         }
         let substance;
         for (const key in this.state.substances) {
@@ -75,6 +96,8 @@ class Statistics extends Component {
                 str_res += `<p>${key}: ${res[key]}</p>`
             }
             $("#statistics-container").html(str_res);
+            console.log('FALSE')
+            this.props.block(false);
         })
     }
 
@@ -100,10 +123,13 @@ class Statistics extends Component {
                 str_res += `<p>${key}: ${res[key]}</p>`;
             }
             $("#statistics-container").html(str_res);
+            this.props.block(false);
         });
     }
 
     fetch_data = debounce(500, false, () => {
+        this.props.block(true);
+
         $("#statistics-container").html('LOADING...');
 
         if (this.state.types.dot) {
@@ -187,7 +213,7 @@ class Statistics extends Component {
                         {Object.keys(this.state.substances).map((name) => {
                             return (
                                 <div className={'statistics-radio-wrapper'} key={name}>
-                                    <label key={name}>
+                                    <label>
                                         <input type='radio' value={name} checked={this.state.substances[name]}
                                                onChange={(e) => {this.updateSubstances(e)}}
                                                className={'statistics-radio-input'}

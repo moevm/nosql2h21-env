@@ -68,6 +68,9 @@ body {
 
 .App {
   text-align: center;
+  position: absolute;
+  width: 100vw;
+  z-index: 10;
 }
 
 .App-logo {
