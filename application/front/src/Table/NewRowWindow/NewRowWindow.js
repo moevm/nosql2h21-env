@@ -103,6 +103,12 @@ class NewRowWindow extends Component {
             return;
         }
 
+        if (this.state.observation['mean_NO2'] === '' || this.state.observation['mean_O3'] === ''
+            || this.state.observation['mean_SO2'] === '' || this.state.observation['mean_CO'] === '') {
+            alert('Укажите mean для всех веществ');
+            return;
+        }
+
         $.post('/api/add', {data: this.state.observation}, (result) => {
             if (!result.success) {
                 alert('Ошибка (да, это все сообщение)');
