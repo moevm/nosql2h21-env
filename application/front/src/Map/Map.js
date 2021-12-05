@@ -19,12 +19,9 @@ class Map extends Component {
             },
         };
 
-        this.years = {
-            min: 0,
-            max: 0,
-            current_min: 0,
-            current_max: 0,
-        };
+        this.years = Object.assign({}, this.props.years);
+        this.years.current_min = this.years.min
+        this.years.current_max = this.years.max
 
         this.promises = [];
 
@@ -32,16 +29,6 @@ class Map extends Component {
     }
 
     componentDidMount() {
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-            this.forceUpdate()
-
-            this.fetch_data();
-        });
-
         $.get(prefix + '/states', {}, async (states) => {
             for (const state of states) {
                 this.promises.push(
@@ -140,8 +127,8 @@ class Map extends Component {
                     <div id={'map-radio-box'}>
                         {Object.keys(this.state.substances).map((name) => {
                             return (
-                                <div className={'map-radio-wrapper'}>
-                                    <label key={name}>
+                                <div className={'map-radio-wrapper'} key={name}>
+                                    <label>
                                         <input type='radio' value={name} checked={this.state.substances[name]}
                                                onChange={(e) => {this.updateSubstances(e)}}
                                                className={'map-radio-input'}

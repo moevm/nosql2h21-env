@@ -11,15 +11,29 @@ import $ from 'jquery'
 import prefix from "./prefix";
 
 
+const APP_STATUS = {
+    HOME: 0,
+    MAP: 1,
+    STATISTICS: 2,
+    TABLE: 3
+};
+
+
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            block: false
+            block: false,
+
+            status: APP_STATUS.HOME
         };
 
         this.block = this.block.bind(this);
+
+        $.get(prefix + '/years', {}, (res) => {
+            this.years = res;
+        })
     }
 
     componentDidMount() {
@@ -39,39 +53,19 @@ class App extends Component {
     }
 
     house_button_clicked = ( event ) => {
-        if( event.button === 0 ) {
-            window.location.assign('/');
-        }
-        else if( event.button === 1 ) {
-            window.open('/');
-        }
+        this.setState({status: APP_STATUS.HOME});
     }
 
     map_button_clicked = (event) => {
-        if (event.button === 0) {
-            window.location.assign('/map');
-        }
-        else if (event.button === 1) {
-            window.open('/map');
-        }
+        this.setState({status: APP_STATUS.MAP});
     }
 
     statistics_button_clicked = (event) => {
-        if (event.button === 0) {
-            window.location.assign('/statistics');
-        }
-        else if (event.button === 1) {
-            window.open('/statistics');
-        }
+        this.setState({status: APP_STATUS.STATISTICS});
     }
 
     table_button_clicked = (event) => {
-        if (event.button === 0) {
-            window.location.assign('/table');
-        }
-        else if (event.button === 1) {
-            window.open('/table');
-        }
+        this.setState({status: APP_STATUS.TABLE});
     }
 
     render() {
@@ -89,6 +83,19 @@ class App extends Component {
             );
         }
 
+        let content;
+        if (this.state.status === APP_STATUS.HOME) {
+            content = <Home years={this.years} block={this.block}/>;
+        }
+        else if (this.state.status === APP_STATUS.MAP) {
+            content = <Map years={this.years} block={this.block}/>;
+        }
+        else if (this.state.status === APP_STATUS.STATISTICS) {
+            content = <Statistics years={this.years} block={this.block}/>;
+        }
+        else if (this.state.status === APP_STATUS.TABLE) {
+            content = <Table years={this.years} block={this.block}/>;
+        }
 
         return (
             <div>
@@ -101,14 +108,7 @@ class App extends Component {
                     <button className={'site-header__button'} onMouseDown={this.table_button_clicked}>Таблица</button>
                 </div>
                 <div id="content">
-                    <BrowserRouter>
-                        <Routes>
-                            <Route path='/' element={<Home block={this.block}/>} />
-                            <Route path='/map' element={<Map block={this.block}/>} />
-                            <Route path='/statistics' element={<Statistics block={this.block}/>} />
-                            <Route path='/table' element={<Table/>} />
-                        </Routes>
-                    </BrowserRouter>
+                    {content}
                 </div>
                 {block}
             </div>
