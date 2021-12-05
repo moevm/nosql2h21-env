@@ -38,8 +38,8 @@ async function import_initial_data() {
                 firstMH_CO: line.firstMH_CO, \
                 aqi_CO: line.aqi_CO \
             }]->(date)", {});
+            n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
         }
-        n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
         return n.records.length;
     } catch (e) {
       console.log(e);
