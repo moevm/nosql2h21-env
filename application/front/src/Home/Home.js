@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './Home.css';
 import $ from "jquery";
+import prefix from '../prefix'
 
 
 class Home extends Component {
@@ -17,11 +18,11 @@ class Home extends Component {
 
         this.download = this.download.bind(this);
         this.upload = this.upload.bind(this);
-        this.open_file = this.open_file.bind(this);
+        // this.open_file = this.open_file.bind(this);
     }
 
     download () {
-        $.get('/api/exportreq', {}, (data) => {
+        $.get(prefix + '/exportreq', {}, (data) => {
             // Prepare data:
             let contents = [
                 [
@@ -95,36 +96,6 @@ class Home extends Component {
 
     upload() {
         this.uploader.click();
-    }
-
-    open_file(event) {
-        let status = [];    // Status output
-        const file_object = event.target.files[0];
-        const reader = new FileReader();
-        //this.setState ({file_URL: fileDownloadUrl});
-
-
-        let loaded_callback = (event) => {
-            this.setState({
-                file: file_object,
-                file_URL: reader.result
-            });
-            console.log(reader.result);
-            // e.target.result is the file's content as text
-            const contents = event.target.result;
-            status.push(`File name: '${file_object.name}'. Length: ${contents.length} bytes.`);
-
-            const beginning = contents.substring(0,50);
-            status.push(`First 50 characters of the file:\n${beginning}`);
-            this.setState({status: status.join('\n')});
-        }
-
-        // Mainline of the method
-        loaded_callback = loaded_callback.bind(this);
-        reader.onload = loaded_callback;
-        reader.readAsDataURL(file_object);
-
-        //reader.readAsText(file_object);
     }
 
     render() {

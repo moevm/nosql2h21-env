@@ -1,5 +1,6 @@
 let neo4j = require('neo4j-driver');
 let creds = require("./credentials");
+let url = require("./url")
 // var env = require('node-env-file');
 // env(__dirname + '/.env');
 // // YOU HAVE TO CREATE .env file in current directory with following content:
@@ -12,7 +13,7 @@ let apoc = require('apoc');
 
 
 async function get_states() {
-    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (location:Address) RETURN DISTINCT location.state as state", {});
@@ -27,7 +28,7 @@ async function get_states() {
 
 async function get_states_location() {
     let location = get_states().then(async (records) => {
-        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
         let location = {};
         for (let record of records) {
             let state = record.get("state");
@@ -54,7 +55,7 @@ async function get_states_location() {
 
 async function get_geolocation() {
     let geolocation = get_states_location().then(async (locations) => {
-        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
         let geolocation = {};
         for (let state in locations) {
             let session = driver.session();
@@ -79,7 +80,7 @@ async function get_geolocation() {
 }
 
 async function get_years() {
-    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let res = await session.run("MATCH (date:Date) RETURN max(date.year) as max_year, min(date.year) as min_year", {});

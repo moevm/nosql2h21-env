@@ -29,10 +29,13 @@ services:
     environment:
       USER: "neo4j"
       PASSWORD: "1234"
+      DOCKER: "TRUE"
     restart: unless-stopped
     depends_on:
       - neo4j
   front:
+    environment:
+      - REACT_APP_DOCKER=TRUE
     build: ./front
     volumes:
       - "./front:/app"

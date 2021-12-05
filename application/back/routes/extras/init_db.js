@@ -1,14 +1,15 @@
 let neo4j = require("neo4j-driver");
 let creds = require("./credentials");
+let url = require("url")
 
 async function import_initial_data() {
-    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         let n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
-        if (n.records.length == 0) {
+        if (n.records.length === 0) {
             await session.run("USING PERIODIC COMMIT 10000 \
-            LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2007_qm.csv' AS line \
+            LOAD CSV WITH HEADERS FROM 'file:///pollution_us_2000_2004_qm.csv' AS line \
             FIELDTERMINATOR ';' \
             MERGE (address:Address {state: line.state, address: line.address}) \
             ON CREATE \
@@ -38,8 +39,11 @@ async function import_initial_data() {
                 aqi_CO: line.aqi_CO \
             }]->(date)", {});
         }
+        n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
+        return n;
     } catch (e) {
       console.log(e);
+      return -1;
     } finally {
       await session.close();
       await driver.close();

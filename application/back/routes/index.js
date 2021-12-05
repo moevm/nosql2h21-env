@@ -3,12 +3,14 @@ var router = express.Router();
 
 let neo4j = require('neo4j-driver');
 let creds = require("./extras/credentials");
+let url = require("./extras/url")
 let file_uploading = require('../file_uploading');
 
 let db_info = require("./extras/db_info");
+let init_db = require("./extras/init_db");
 
 async function filter_request(states, interval, page, lines) {
-    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     lines = parseInt(lines);
@@ -35,7 +37,7 @@ async function filter_request(states, interval, page, lines) {
 }
 
 async function export_request() {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     try {
@@ -60,7 +62,7 @@ async function export_request() {
 
 async function map_request(substance, interval) {
     let map_data = db_info.get_states().then(async (records) => {
-        let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+        let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
         let map_data = {};
         let zero = 0;
         for (let record of records) {
@@ -101,7 +103,7 @@ async function map_request(substance, interval) {
 }
 
 async function add_line(data) {
-    let driver = neo4j.driver("neo4j://localhost", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
 
     let result = {
@@ -156,7 +158,7 @@ async function add_line(data) {
 }
 
 async function import_data(filename) {
-    let driver = neo4j.driver("bolt://neo4j", neo4j.auth.basic(creds.user, creds.password));
+    let driver = neo4j.driver(url, neo4j.auth.basic(creds.user, creds.password));
     let session = driver.session();
     try {
         await session.run("MATCH (n) DETACH DELETE n", {});
@@ -203,7 +205,12 @@ async function import_data(filename) {
 }
 
 router.get('/', function(req, res) {
-    res.render('index', { title: 'Express' });
+    init_db.import_initial_data().then(n => {
+        res.send(n > 0);
+    })
+    .catch(err => {
+        res.send(false);
+    });
 });
 
 router.get('/filter', async (req, res) => {
@@ -335,14 +342,12 @@ router.post('/upload', file_uploading.single('new_csv'), (req, res) => {
         if (req.file) {
             import_data(req.file.filename)
             .then((n) => {
-                console.log(n);
-                res.send({num: n})
+                res.send(n > 0);
             })
-            .catch(err => res.send({msg: "something went wrong"}));
-            //загрузка файла в БД
+            .catch(err => res.send(false));
         }
         else {
-            res.send({msg: "something went wrong"})
+            res.send(false);
         }
     } catch (e) {
         console.log(e);
