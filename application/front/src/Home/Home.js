@@ -86,7 +86,7 @@ class Home extends Component {
         }
         let data = new FormData();
         data.append('new_csv', file);
-        fetch('/api/upload', {
+        fetch(prefix + '/upload', {
             method: 'POST',
             body: data
         }).then(response => response.json())
