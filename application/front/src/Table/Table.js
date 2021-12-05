@@ -60,6 +60,7 @@ class Table extends Component {
             has_more: true
         };
 
+        this.years = this.props.years;
         this.page = 0;
         this.lines = 100;
 
@@ -72,22 +73,26 @@ class Table extends Component {
     }
 
     componentDidMount() {
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res;
+            years.current_min = years.min;
+            years.current_max = years.max;
+            console.log(this.years)
+        })
+
         this.filter();
 
         $.get(prefix + '/states', {}, (res) => {
-            let states = []
+            let states = [];
             res.forEach((value) => {
-                states.push({name: value, check: true})
+                states.push({name: value, check: true});
             });
             this.states = states;
         })
 
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-        })
+        this.years = Object.assign({}, this.props.years);
+        this.years.current_min = this.years.min
+        this.years.current_max = this.years.max
     }
 
     clear_data() {

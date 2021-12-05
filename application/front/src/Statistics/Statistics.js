@@ -32,44 +32,33 @@ class Statistics extends Component {
             states: []
         };
 
-        this.years = {
-            min: 0,
-            max: 0,
-            current_min: 0,
-            current_max: 0,
-        };
+        this.years = Object.assign({}, this.props.years);
+        this.years.current_min = this.years.min
+        this.years.current_max = this.years.max
 
         this.location = "WHOLE COUNTRY";
     }
 
     componentDidMount() {
         $.get(prefix + '/states', {}, (res) => {
-            let states = ['WHOLE COUNTRY']
+            let states = ['WHOLE COUNTRY'];
             res.forEach((value) => {
-                states.push(value)
+                states.push(value);
             });
             this.setState({states: states});
         });
-
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-            this.forceUpdate()
-        })
 
         $("#statistics-container").html('LOADING...');
     }
 
 
     get_plots_data() {
-        let interval = this.years
+        let interval = this.years;
         if (interval !== undefined) {
             interval = {
                 min: interval.current_min,
                 max: interval.current_max
-            }
+            };
         }
         let substance;
         for (const key in this.state.substances) {
@@ -79,7 +68,6 @@ class Statistics extends Component {
             }
         }
         let location = this.location;
-
 
         $.get(prefix + '/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
             let str_res = ""
@@ -198,7 +186,7 @@ class Statistics extends Component {
                     <div className={'statistics-radio-box'}>
                         {Object.keys(this.state.substances).map((name) => {
                             return (
-                                <div className={'statistics-radio-wrapper'}>
+                                <div className={'statistics-radio-wrapper'} key={name}>
                                     <label key={name}>
                                         <input type='radio' value={name} checked={this.state.substances[name]}
                                                onChange={(e) => {this.updateSubstances(e)}}
@@ -214,8 +202,8 @@ class Statistics extends Component {
                     <div className={'statistics-radio-box'}>
                         {Object.keys(this.state.types).map((name) => {
                             return (
-                                <div className={'statistics-radio-wrapper'}>
-                                    <label key={name}>
+                                <div className={'statistics-radio-wrapper'} key={name}>
+                                    <label>
                                         <input type='radio' value={name} checked={this.state.types[name]}
                                                onChange={(e) => {this.updateTypes(e)}}
                                                className={'statistics-radio-input'}
@@ -232,7 +220,7 @@ class Statistics extends Component {
                         <select className={'statistics-select'}
                                 onChange={(e) => {this.updateLocation(e)}}>
                             {this.state.states.map((state) => {
-                                return <option value={state}>{state}</option>
+                                return <option value={state} key={state}>{state}</option>
                             })}
                         </select>
                     </div>
