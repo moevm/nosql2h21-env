@@ -75,7 +75,6 @@ class Table extends Component {
         this.filter();
 
         $.get(prefix + '/states', {}, (res) => {
-            console.log(res)
             let states = []
             res.forEach((value) => {
                 states.push({name: value, check: true})
