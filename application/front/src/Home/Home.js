@@ -84,13 +84,17 @@ class Home extends Component {
             // ERROR HANDLER NEEDED
             return;
         }
+        this.props.block(true);
         let data = new FormData();
         data.append('new_csv', file);
         fetch(prefix + '/upload', {
             method: 'POST',
             body: data
         }).then(response => response.json())
-        .then((result) => console.log(result))
+        .then((result) => {
+            console.log(result)
+            this.props.block(false);
+        })
         .catch((err) => console.log(err));
     }
 

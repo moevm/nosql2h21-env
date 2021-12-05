@@ -40,7 +40,7 @@ async function import_initial_data() {
             }]->(date)", {});
         }
         n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
-        return n;
+        return n.records.length;
     } catch (e) {
       console.log(e);
       return -1;

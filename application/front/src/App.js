@@ -7,6 +7,8 @@ import Table from './Table/Table'
 import './App.css';
 import house from './house.svg'
 import logo from './logo.svg'
+import $ from 'jquery'
+import prefix from "./prefix";
 
 
 class App extends Component {
@@ -16,6 +18,20 @@ class App extends Component {
         this.state = {
             block: false
         };
+
+        this.block = this.block.bind(this);
+    }
+
+    componentDidMount() {
+        this.block(true);
+        $.get(prefix + '/init', {}, (res) => {
+            if (res) {
+                this.block(false);
+            }
+            else {
+                alert('Возникли проблемы. Загрузки можно даже не ждать');
+            }
+        })
     }
 
     block(check) {
@@ -87,7 +103,7 @@ class App extends Component {
                 <div id="content">
                     <BrowserRouter>
                         <Routes>
-                            <Route path='/' element={<Home/>} />
+                            <Route path='/' element={<Home block={this.block}/>} />
                             <Route path='/map' element={<Map/>} />
                             <Route path='/statistics' element={<Statistics/>} />
                             <Route path='/table' element={<Table/>} />

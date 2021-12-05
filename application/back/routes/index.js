@@ -206,7 +206,7 @@ async function import_data(filename) {
     }
 }
 
-router.get('/', function(req, res) {
+router.get('/init', function(req, res) {
     init_db.import_initial_data().then(n => {
         res.send(n > 0);
     })
