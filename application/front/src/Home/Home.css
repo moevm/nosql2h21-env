@@ -8,6 +8,7 @@
 }
 
 .home-button {
+    cursor: pointer;
     width: auto;
     height: 60px;
     padding-left: 20px;
@@ -20,4 +21,8 @@
     font-weight: 600;
     font-family: inherit;
     color: white;
+}
+
+input {
+    margin-right: 5px;
 }
