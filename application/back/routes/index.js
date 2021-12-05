@@ -4,6 +4,8 @@ var router = express.Router();
 let neo4j = require('neo4j-driver');
 let creds = require("./extras/credentials");
 let url = require("./extras/url")
+let uploads_url = require("./extras/uploads_url")
+
 let file_uploading = require('../file_uploading');
 
 let db_info = require("./extras/db_info");
@@ -162,7 +164,7 @@ async function import_data(filename) {
     let session = driver.session();
     try {
         await session.run("MATCH (n) DETACH DELETE n", {});
-        let filepath = `http://back:8000/uploads/${filename}`;
+        let filepath = `http://${uploads_url}:8000/uploads/${filename}`;
         await session.run("USING PERIODIC COMMIT 10000 \
         LOAD CSV WITH HEADERS FROM $fpath AS line \
         FIELDTERMINATOR ';' \
