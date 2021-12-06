@@ -11,40 +11,22 @@ import $ from 'jquery'
 import prefix from "./prefix";
 
 
-const APP_STATUS = {
-    HOME: 0,
-    MAP: 1,
-    STATISTICS: 2,
-    TABLE: 3
-};
-
-
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            block: false,
-
-            status: APP_STATUS.HOME
+            block: false
         };
 
         this.block = this.block.bind(this);
-
-        /*$.get(prefix + '/years', {}, (res) => {
-            this.years = res;
-        })*/
     }
 
     componentDidMount() {
         this.block(true);
         $.get(prefix + '/init', {}, (res) => {
             if (res) {
-                $.get(prefix + '/years', {}, (res) => {
-                    this.years = res;
-                    this.block(false);
-                })
-                //this.block(false);
+                this.block(false);
             }
             else {
                 alert('Возникли проблемы. Загрузки можно даже не ждать');
@@ -57,19 +39,39 @@ class App extends Component {
     }
 
     house_button_clicked = ( event ) => {
-        this.setState({status: APP_STATUS.HOME});
+        if( event.button === 0 ) {
+            window.location.assign('/');
+        }
+        else if( event.button === 1 ) {
+            window.open('/');
+        }
     }
 
     map_button_clicked = (event) => {
-        this.setState({status: APP_STATUS.MAP});
+        if (event.button === 0) {
+            window.location.assign('/map');
+        }
+        else if (event.button === 1) {
+            window.open('/map');
+        }
     }
 
     statistics_button_clicked = (event) => {
-        this.setState({status: APP_STATUS.STATISTICS});
+        if (event.button === 0) {
+            window.location.assign('/statistics');
+        }
+        else if (event.button === 1) {
+            window.open('/statistics');
+        }
     }
 
     table_button_clicked = (event) => {
-        this.setState({status: APP_STATUS.TABLE});
+        if (event.button === 0) {
+            window.location.assign('/table');
+        }
+        else if (event.button === 1) {
+            window.open('/table');
+        }
     }
 
     render() {
@@ -87,19 +89,6 @@ class App extends Component {
             );
         }
 
-        let content;
-        if (this.state.status === APP_STATUS.HOME) {
-            content = <Home years={this.years} block={this.block}/>;
-        }
-        else if (this.state.status === APP_STATUS.MAP) {
-            content = <Map years={this.years} block={this.block}/>;
-        }
-        else if (this.state.status === APP_STATUS.STATISTICS) {
-            content = <Statistics years={this.years} block={this.block}/>;
-        }
-        else if (this.state.status === APP_STATUS.TABLE) {
-            content = <Table years={this.years} block={this.block}/>;
-        }
 
         return (
             <div>
@@ -112,7 +101,14 @@ class App extends Component {
                     <button className={'site-header__button'} onMouseDown={this.table_button_clicked}>Таблица</button>
                 </div>
                 <div id="content">
-                    {content}
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path='/' element={<Home block={this.block}/>} />
+                            <Route path='/map' element={<Map block={this.block}/>} />
+                            <Route path='/statistics' element={<Statistics block={this.block}/>} />
+                            <Route path='/table' element={<Table block={this.block}/>} />
+                        </Routes>
+                    </BrowserRouter>
                 </div>
                 {block}
             </div>

@@ -204,7 +204,7 @@ class Statistics extends Component {
                             max={this.years.max}
                             current_min={this.years.current_min}
                             current_max={this.years.current_max}
-                            onChange={({ min, max, mouseDown }) => this.updateYears(min, max, mouseDown)}
+                            onChange={( min, max, mouseDown ) => this.updateYears(min, max, mouseDown)}
                         />
                     </div>
                 </div>

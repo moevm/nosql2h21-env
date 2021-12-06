@@ -19,9 +19,6 @@ class Map extends Component {
             },
         };
 
-        //this.years = Object.assign({}, this.props.years);
-        //this.years.current_min = this.years.min
-        //this.years.current_max = this.years.max
         this.years = {
             min: 0,
             max: 0,
@@ -134,7 +131,7 @@ class Map extends Component {
                             max={this.years.max}
                             current_min={this.years.current_min}
                             current_max={this.years.current_max}
-                            onChange={({ min, max, mouseDown}) => this.updateYears(min, max, mouseDown)}
+                            onChange={( min, max, mouseDown ) => this.updateYears(min, max, mouseDown)}
                         />
                     </div>
                 </div>

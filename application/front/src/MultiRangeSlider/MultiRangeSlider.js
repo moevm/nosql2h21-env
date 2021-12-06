@@ -23,6 +23,7 @@ class MultiRangeSlider extends Component {
         this.setMinValCurr = this.setMinValCurr.bind(this);
         this.setMaxValCurr = this.setMaxValCurr.bind(this);
         this.setMouseDown = this.setMouseDown.bind(this);
+        this.callback = this.callback.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
