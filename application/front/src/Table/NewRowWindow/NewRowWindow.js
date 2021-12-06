@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { columnsLabels } from '../columnsOptions'
 import './NewRowWindow.css';
 import $ from "jquery";
+import prefix from "../../prefix";
 
 
 class NewRowWindow extends Component {
@@ -109,7 +110,7 @@ class NewRowWindow extends Component {
             return;
         }
 
-        $.post('/api/add', {data: this.state.observation}, (result) => {
+        $.post(prefix + '/add', {data: this.state.observation}, (result) => {
             if (!result.success) {
                 alert('Ошибка (да, это все сообщение)');
                 console.log(result.error);
