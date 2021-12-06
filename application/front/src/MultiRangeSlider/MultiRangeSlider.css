@@ -32,7 +32,8 @@
 }
 
 .slider__range {
-    background-color: #9fe5e1;
+    /*background-color: #9fe5e1;*/
+    background-color: #7fb5e1;
     z-index: 2;
 }
 

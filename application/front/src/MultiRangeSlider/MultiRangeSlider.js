@@ -112,7 +112,8 @@ class MultiRangeSlider extends Component {
                     onMouseDown={() => {this.setMouseDown(true)}}
                     onMouseUp={() => {this.setMouseDown(false)}}
                     className={classnames("thumb thumb--zindex-3", {
-                        "thumb--zindex-5": this.state.minValCurr > this.state.maxVal - 100
+                        "thumb--zindex-5": (this.state.minValCurr === this.state.maxValCurr
+                                        && this.state.maxValCurr === this.state.maxVal)
                     })}
                 />
                 <input
