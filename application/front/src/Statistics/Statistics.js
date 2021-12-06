@@ -96,7 +96,6 @@ class Statistics extends Component {
                 str_res += `<p>${key}: ${res[key]}</p>`
             }
             $("#statistics-container").html(str_res);
-            console.log('FALSE')
             this.props.block(false);
         })
     }

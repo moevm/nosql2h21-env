@@ -24,6 +24,11 @@ class MultiRangeSlider extends Component {
         this.setMaxValCurr = this.setMaxValCurr.bind(this);
         this.setMouseDown = this.setMouseDown.bind(this);
         this.callback = this.callback.bind(this);
+        this.updateStrip = this.updateStrip.bind(this);
+    }
+
+    componentDidMount() {
+        this.updateStrip();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -37,15 +42,46 @@ class MultiRangeSlider extends Component {
         }
     }
 
+
+    // Convert to percentage
+    getPercent(value) {
+        return Math.round(((value - this.state.minVal) / (this.state.maxVal - this.state.minVal)) * 100)
+    }
+
+
+    updateStrip(){
+        if (this.maxValRef.current) {
+            const minPercent = this.getPercent(this.state.minValCurr);
+            const maxPercent = this.getPercent(+this.maxValRef.current.value);
+
+            if (this.range.current) {
+                this.range.current.style.left = `${minPercent}%`;
+                this.range.current.style.width = `${maxPercent - minPercent}%`;
+            }
+        }
+
+        if (this.minValRef.current) {
+            const minPercent = this.getPercent(+this.minValRef.current.value);
+            const maxPercent = this.getPercent(this.state.maxValCurr);
+
+            if (this.range.current) {
+                this.range.current.style.width = `${maxPercent - minPercent}%`;
+            }
+        }
+    }
+
+
     setMinValCurr(value) {
         this.setState({minValCurr: value}, () => {
             this.callback();
+            this.updateStrip();
         });
     }
 
     setMaxValCurr(value) {
         this.setState({maxValCurr: value}, () => {
             this.callback();
+            this.updateStrip();
         });
     }
 

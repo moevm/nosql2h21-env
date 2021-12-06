@@ -37,7 +37,6 @@ class Map extends Component {
             years.current_min = years.min;
             years.current_max = years.max;
             this.years = years;
-            console.log(this.years)
         })
 
         $.get(prefix + '/states', {}, async (states) => {
@@ -45,6 +44,7 @@ class Map extends Component {
                 this.promises.push(
                     $.get(prefix + '/geolocation', {address: state}, (res) => {
                         this.states_data[state] = res || {};
+                        console.log(res);
                     })
                 );
             }
