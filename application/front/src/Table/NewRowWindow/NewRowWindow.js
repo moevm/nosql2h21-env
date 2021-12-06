@@ -113,6 +113,8 @@ class NewRowWindow extends Component {
             if (!result.success) {
                 alert('Ошибка (да, это все сообщение)');
                 console.log(result.error);
+            } else {
+                this.props.callback();
             }
         })
     }

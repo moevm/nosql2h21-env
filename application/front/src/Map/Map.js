@@ -19,9 +19,15 @@ class Map extends Component {
             },
         };
 
-        this.years = Object.assign({}, this.props.years);
-        this.years.current_min = this.years.min
-        this.years.current_max = this.years.max
+        //this.years = Object.assign({}, this.props.years);
+        //this.years.current_min = this.years.min
+        //this.years.current_max = this.years.max
+        this.years = {
+            min: 0,
+            max: 0,
+            current_min: 0,
+            current_max: 0,
+        };
 
         this.promises = [];
 
@@ -29,6 +35,14 @@ class Map extends Component {
     }
 
     componentDidMount() {
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res;
+            years.current_min = years.min;
+            years.current_max = years.max;
+            this.years = years;
+            console.log(this.years)
+        })
+
         $.get(prefix + '/states', {}, async (states) => {
             for (const state of states) {
                 this.promises.push(
@@ -37,6 +51,7 @@ class Map extends Component {
                     })
                 );
             }
+            this.fetch_data();
         });
 
         $("#map-container").html('LOADING...');

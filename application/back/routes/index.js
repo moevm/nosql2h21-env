@@ -318,10 +318,13 @@ router.get('/states', (req, res) => {
 
 router.get('/years', (req, res) => {
     db_info.get_years().then((records) => {
-        let year_range = {
-            min: records[0].get("min_year").toInt(),
-            max: records[0].get("max_year").toInt()
-        };
+        let year_range = { min: 0, max: 0 };
+        if (records.length > 0) {
+            year_range = {
+                min: records[0].get("min_year") ? records[0].get("min_year").toInt() : 0,
+                max: records[0].get("max_year") ? records[0].get("max_year").toInt() : 0
+            };
+        }
         //console.log(year_range);
         res.send(year_range);
     });

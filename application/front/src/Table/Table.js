@@ -60,7 +60,12 @@ class Table extends Component {
             has_more: true
         };
 
-        this.years = this.props.years;
+        this.years = {
+            min: 0,
+            max: 0,
+            current_min: 0,
+            current_max: 0,
+        };
         this.page = 0;
         this.lines = 100;
 
@@ -73,26 +78,49 @@ class Table extends Component {
     }
 
     componentDidMount() {
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res;
-            years.current_min = years.min;
-            years.current_max = years.max;
-            console.log(this.years)
-        })
-
-        this.filter();
+        /*this.filter();
 
         $.get(prefix + '/states', {}, (res) => {
-            let states = [];
+            let states = []
             res.forEach((value) => {
-                states.push({name: value, check: true});
+                states.push({name: value, check: true})
             });
             this.states = states;
         })
 
-        this.years = Object.assign({}, this.props.years);
-        this.years.current_min = this.years.min
-        this.years.current_max = this.years.max
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res
+            years.current_min = years.min
+            years.current_max = years.max
+            this.years = years
+        })*/
+
+        let promises = []
+        promises.push(
+            $.get(prefix + '/years', {}, (res) => {
+                let years = res;
+                years.current_min = years.min;
+                years.current_max = years.max;
+                this.years = years;
+            })
+        );
+        promises.push(
+            $.get(prefix + '/states', {}, (res) => {
+                let states = [];
+                res.forEach((value) => {
+                    states.push({name: value, check: true});
+                });
+                this.states = states;
+            })
+        );
+
+        Promise.all(promises).then(() => {
+            this.filter();
+        })
+
+        //this.years = Object.assign({}, this.props.years);
+        //this.years.current_min = this.years.min
+        //this.years.current_max = this.years.max
     }
 
     clear_data() {
@@ -161,6 +189,12 @@ class Table extends Component {
 
     close_new_row_window() {
         this.set_page_state(TABLE_PAGE_STATUS.DISPLAY);
+        $.get(prefix + '/years', {}, (res) => {
+            let years = res;
+            years.current_min = years.min;
+            years.current_max = years.max;
+            this.years = years;
+        })
     }
 
     form_table_row(line, id) {

@@ -31,16 +31,20 @@ class App extends Component {
 
         this.block = this.block.bind(this);
 
-        $.get(prefix + '/years', {}, (res) => {
+        /*$.get(prefix + '/years', {}, (res) => {
             this.years = res;
-        })
+        })*/
     }
 
     componentDidMount() {
         this.block(true);
         $.get(prefix + '/init', {}, (res) => {
             if (res) {
-                this.block(false);
+                $.get(prefix + '/years', {}, (res) => {
+                    this.years = res;
+                    this.block(false);
+                })
+                //this.block(false);
             }
             else {
                 alert('Возникли проблемы. Загрузки можно даже не ждать');
