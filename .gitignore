@@ -2,5 +2,6 @@ node_modules
 credentials.json
 .idea
 *.csv
+!pollution_us_4000_qm.csv
 application/neo4j/**/
 .env

@@ -9,7 +9,7 @@ async function import_initial_data() {
         let n = await session.run("MATCH (n) RETURN n LIMIT 1", {});
         if (n.records.length === 0) {
             await session.run("USING PERIODIC COMMIT 10000 \
-            LOAD CSV WITH HEADERS FROM 'file:///pollution_us_50000_qm.csv' AS line \
+            LOAD CSV WITH HEADERS FROM 'file:///pollution_us_4000_qm.csv' AS line \
             FIELDTERMINATOR ';' \
             MERGE (address:Address {state: line.state, address: line.address}) \
             ON CREATE \
