@@ -15,7 +15,9 @@
     "react-router-dom": "^6.0.1",
     "react-scripts": "4.0.3",
     "throttle-debounce": "^3.0.1",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "leaflet": "^1.7.1",
+    "react-leaflet": "^3.2.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -36,9 +38,9 @@
       "not op_mini all"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
     ]
   }
 }

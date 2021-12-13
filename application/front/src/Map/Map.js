@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
+import MapComponent from './MapComponent/MapComponent';
 import './Map.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
@@ -51,14 +52,14 @@ class Map extends Component {
             this.fetch_data();
         });
 
-        $("#map-container").html('LOADING...');
+        //$("#map-container").html('LOADING...');
     }
 
 
     fetch_data =  debounce(500, false, () => {
         this.props.block(true);
 
-        $("#map-container").html('LOADING...');
+        //$("#map-container").html('LOADING...');
 
         let interval = this.years;
         if (interval !== undefined) {
@@ -87,7 +88,8 @@ class Map extends Component {
                     res_str += `<p>${state}: {latitude: ${this.states_data[state]['latitude']}, 
                             longitude: ${this.states_data[state]['longitude']}, mean: ${this.states_data[state]['mean']}}</p>`;
                 }
-                $("#map-container").html(res_str);
+                //$("#map-container").html(res_str);
+                console.log(res_str);
 
                 this.props.block(false);
             });
@@ -123,7 +125,7 @@ class Map extends Component {
             <div>
                 <div id={'map-box-left'}>
                     <div id={'map-container'}>
-
+                        <MapComponent />
                     </div>
                     <div id={'map-slider-box'}>
                         <MultiRangeSlider
