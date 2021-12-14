@@ -82,14 +82,13 @@ class Map extends Component {
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
                 }
-
-                let res_str = "";
+                /*let res_str = "";
                 for (const state in this.states_data) {
                     res_str += `<p>${state}: {latitude: ${this.states_data[state]['latitude']}, 
                             longitude: ${this.states_data[state]['longitude']}, mean: ${this.states_data[state]['mean']}}</p>`;
                 }
-                //$("#map-container").html(res_str);
-                console.log(res_str);
+                $("#map-container").html(res_str);
+                console.log(res_str);*/
 
                 this.props.block(false);
             });
@@ -125,7 +124,7 @@ class Map extends Component {
             <div>
                 <div id={'map-box-left'}>
                     <div id={'map-container'}>
-                        <MapComponent />
+                        <MapComponent states_data={this.states_data}/>
                     </div>
                     <div id={'map-slider-box'}>
                         <MultiRangeSlider
