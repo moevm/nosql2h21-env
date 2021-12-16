@@ -34,7 +34,7 @@ class MapComponent extends React.Component {
         <MapConsumer>
           {(map) => {
             if (!this.heat) {
-              this.heat = L.heatLayer([], {radius: 100}).addTo(map);
+              this.heat = L.heatLayer([], {radius: 100, blur: 10}).addTo(map);
             } 
             let intensities = this.props.states_data ? this.props.states_data.map(state => {
               return state.mean;
