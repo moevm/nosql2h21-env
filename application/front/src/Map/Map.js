@@ -81,6 +81,7 @@ class Map extends Component {
             $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
+                    this.states_data[state].name = state;
                 }
                 /*let res_str = "";
                 for (const state in this.states_data) {
@@ -124,7 +125,7 @@ class Map extends Component {
             <div>
                 <div id={'map-box-left'}>
                     <div id={'map-container'}>
-                        <MapComponent states_data={this.states_data}/>
+                        <MapComponent states_data={Object.values(this.states_data)}/>
                     </div>
                     <div id={'map-slider-box'}>
                         <MultiRangeSlider
