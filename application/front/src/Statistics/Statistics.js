@@ -5,6 +5,10 @@ import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
 import prefix from "../prefix";
 
+import Plotly from "plotly.js"
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plot = createPlotlyComponent(Plotly);
+
 
 const chart_types = {
     dot: 'Точечная',
@@ -29,7 +33,16 @@ class Statistics extends Component {
                 histogram: false
             },
 
-            states: []
+            states: [],
+
+            data: [{
+                x: [1, 3, 5],
+                y: [10, 13, 17],
+                type: "bar",
+
+            }],
+
+            layout: { width: 640, height: 440, title: "Graph Example" },
         };
 
         this.years = {
@@ -65,7 +78,7 @@ class Statistics extends Component {
             })
         );
 
-        $("#statistics-container").html('LOADING...');
+        //$("#statistics-container").html('LOADING...');
 
         Promise.all(promises).then(() => {
             this.fetch_data();
@@ -95,7 +108,7 @@ class Statistics extends Component {
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`
             }
-            $("#statistics-container").html(str_res);
+            //$("#statistics-container").html(str_res);
             this.props.block(false);
         })
     }
@@ -121,7 +134,7 @@ class Statistics extends Component {
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`;
             }
-            $("#statistics-container").html(str_res);
+            //$("#statistics-container").html(str_res);
             this.props.block(false);
         });
     }
@@ -129,7 +142,7 @@ class Statistics extends Component {
     fetch_data = debounce(500, false, () => {
         this.props.block(true);
 
-        $("#statistics-container").html('LOADING...');
+        //$("#statistics-container").html('LOADING...');
 
         if (this.state.types.dot) {
             this.get_plots_data();
@@ -189,13 +202,19 @@ class Statistics extends Component {
         }
     }
 
+    hist_plot(){
+
+    }
 
     render() {
         return (
             <div>
                 <div id={'statistics-box-left'}>
                     <div id={'statistics-container'}>
-
+                        <Plot
+                            data={this.state.data}
+                            layout={this.state.layout}
+                        />
                     </div>
                     <div id={'statistics-slider-box'}>
                         <MultiRangeSlider
@@ -253,6 +272,7 @@ class Statistics extends Component {
 
                 </div>
             </div>
+
         );
     };
 }

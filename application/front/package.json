@@ -18,7 +18,9 @@
     "react-router-dom": "^6.0.1",
     "react-scripts": "4.0.3",
     "throttle-debounce": "^3.0.1",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "plotly.js": "^2.8.1",
+    "react-plotly.js": "^1.0.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -26,6 +28,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:8000",
   "eslintConfig": {
     "extends": [
       "react-app",
