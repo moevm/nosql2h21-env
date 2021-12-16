@@ -7,7 +7,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import {columnsMap} from './columnsOptions'
 import './Table.css';
 import $ from "jquery"
-import prefix from "../prefix";
 
 
 const TABLE_PAGE_STATUS = {
@@ -78,26 +77,9 @@ class Table extends Component {
     }
 
     componentDidMount() {
-        /*this.filter();
-
-        $.get(prefix + '/states', {}, (res) => {
-            let states = []
-            res.forEach((value) => {
-                states.push({name: value, check: true})
-            });
-            this.states = states;
-        })
-
-        $.get(prefix + '/years', {}, (res) => {
-            let years = res
-            years.current_min = years.min
-            years.current_max = years.max
-            this.years = years
-        })*/
-
         let promises = []
         promises.push(
-            $.get(prefix + '/years', {}, (res) => {
+            $.get('/years', {}, (res) => {
                 let years = res;
                 years.current_min = years.min;
                 years.current_max = years.max;
@@ -105,7 +87,7 @@ class Table extends Component {
             })
         );
         promises.push(
-            $.get(prefix + '/states', {}, (res) => {
+            $.get('/states', {}, (res) => {
                 let states = [];
                 res.forEach((value) => {
                     states.push({name: value, check: true});
@@ -142,7 +124,7 @@ class Table extends Component {
             };
         }
 
-        $.get(prefix + '/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
+        $.get('/filter', {states: states, interval: interval, page: this.page, lines: this.lines}, (res) => {
             this.setState({data: this.state.data.concat(res)})
         })
     }
@@ -189,7 +171,7 @@ class Table extends Component {
 
     close_new_row_window() {
         this.set_page_state(TABLE_PAGE_STATUS.DISPLAY);
-        $.get(prefix + '/years', {}, (res) => {
+        $.get('/years', {}, (res) => {
             let years = res;
             years.current_min = years.min;
             years.current_max = years.max;

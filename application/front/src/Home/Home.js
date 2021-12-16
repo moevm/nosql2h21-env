@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import './Home.css';
 import $ from "jquery";
-import prefix from '../prefix'
 
 
 class Home extends Component {
@@ -23,7 +22,7 @@ class Home extends Component {
 
     download () {
         this.props.block(true)
-        $.get(prefix + '/exportreq', {}, (data) => {
+        $.get('/exportreq', {}, (data) => {
             // Prepare data:
             let contents = [
                 [
@@ -66,7 +65,7 @@ class Home extends Component {
             value.forEach((item, i) => {
                 let innerValue = (item === null || item === undefined) ? '' : item.toString();
                 let result = innerValue.replace(/"/g, '""');
-                if (result.search(/([",\n])/g) >= 0) {
+                if (result.search(/([",;\n])/g) >= 0) {
                     result = '"' + result + '"';
                 }
                 if (i > 0) {
@@ -89,7 +88,7 @@ class Home extends Component {
         this.props.block(true);
         let data = new FormData();
         data.append('new_csv', file);
-        fetch(prefix + '/upload', {
+        fetch('/upload', {
             method: 'POST',
             body: data
         }).then(response => response.json())
