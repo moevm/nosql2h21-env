@@ -4,7 +4,6 @@ import MapComponent from './MapComponent/MapComponent';
 import './Map.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
-import prefix from '../prefix'
 
 
 class Map extends Component {
@@ -33,17 +32,17 @@ class Map extends Component {
     }
 
     componentDidMount() {
-        $.get(prefix + '/years', {}, (res) => {
+        $.get('/years', {}, (res) => {
             let years = res;
             years.current_min = years.min;
             years.current_max = years.max;
             this.years = years;
         })
 
-        $.get(prefix + '/states', {}, async (states) => {
+        $.get('/states', {}, async (states) => {
             for (const state of states) {
                 this.promises.push(
-                    $.get(prefix + '/geolocation', {address: state}, (res) => {
+                    $.get('/geolocation', {address: state}, (res) => {
                         this.states_data[state] = res || {};
                         console.log(res);
                     })
@@ -78,7 +77,7 @@ class Map extends Component {
         }
 
         Promise.all(this.promises).then(() => {
-            $.get(prefix + '/map', {substance: substance, interval: interval}, (res) => {
+            $.get('/map', {substance: substance, interval: interval}, (res) => {
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
                     this.states_data[state].name = state;

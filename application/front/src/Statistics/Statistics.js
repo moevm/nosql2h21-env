@@ -3,7 +3,6 @@ import MultiRangeSlider from '../MultiRangeSlider';
 import './Statistics.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
-import prefix from "../prefix";
 
 
 const chart_types = {
@@ -47,7 +46,7 @@ class Statistics extends Component {
 
         let promises = []
         promises.push(
-            $.get(prefix + '/years', {}, (res) => {
+            $.get('/years', {}, (res) => {
                 let years = res;
                 years.current_min = years.min;
                 years.current_max = years.max;
@@ -56,7 +55,7 @@ class Statistics extends Component {
             })
         );
         promises.push(
-            $.get(prefix + '/states', {}, (res) => {
+            $.get('/states', {}, (res) => {
                 let states = ['WHOLE COUNTRY'];
                 res.forEach((value) => {
                     states.push(value);
@@ -90,7 +89,7 @@ class Statistics extends Component {
         }
         let location = this.location;
 
-        $.get(prefix + '/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
+        $.get('/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
             let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`
@@ -116,7 +115,7 @@ class Statistics extends Component {
             }
         }
 
-        $.get(prefix + '/stats/hist', {substance: substance, interval: interval}, (res) => {
+        $.get('/stats/hist', {substance: substance, interval: interval}, (res) => {
             let str_res = ""
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`;

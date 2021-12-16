@@ -8,7 +8,6 @@ import './App.css';
 import house from './house.svg'
 import logo from './logo.svg'
 import $ from 'jquery'
-import prefix from "./prefix";
 
 
 class App extends Component {
@@ -24,7 +23,7 @@ class App extends Component {
 
     componentDidMount() {
         this.block(true);
-        $.get(prefix + '/init', {}, (res) => {
+        $.get('/init', {}, (res) => {
             if (res) {
                 this.block(false);
             }
