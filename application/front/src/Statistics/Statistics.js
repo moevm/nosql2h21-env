@@ -35,13 +35,15 @@ class Statistics extends Component {
             states: [],
 
             data: [{
-                x: [1, 3, 5],
-                y: [10, 13, 17],
-                type: "bar",
+                x: ['a', 'b'],
+                y: [2, 3],
+                type: "scatter",
+                mode: 'lines+markers',
 
             }],
 
-            layout: { width: 640, height: 440, title: "Graph Example" },
+            layout: { title: "Loading...." },
+            conf: {responsive: true},
         };
 
         this.years = {
@@ -103,11 +105,25 @@ class Statistics extends Component {
         let location = this.location;
 
         $.get('/stats/plots', {substance: substance, interval: interval, state: location}, (res) => {
-            let str_res = ""
+
+            let x = [];
+            let y = [];
             for (const key in res) {
-                str_res += `<p>${key}: ${res[key]}</p>`
+
+                x.push(key);
+                y.push(parseInt(res[key]));
             }
-            //$("#statistics-container").html(str_res);
+            let data = [{x: x, y: y, type: "scatter", mode: 'lines',
+                line: {
+                    color: 'rgb(118,147,91)',
+                    width: 2
+                }}];
+
+
+            this.setState({data: data});
+            this.setState({layout: { title: "Scatter chart" }});
+            console.log(this.state.data);
+
             this.props.block(false);
         })
     }
@@ -133,7 +149,7 @@ class Statistics extends Component {
             for (const key in res) {
                 str_res += `<p>${key}: ${res[key]}</p>`;
             }
-            //$("#statistics-container").html(str_res);
+            $("#statistics-container").html(str_res);
             this.props.block(false);
         });
     }
@@ -201,11 +217,10 @@ class Statistics extends Component {
         }
     }
 
-    hist_plot(){
-
-    }
-
+    //config={this.state.conf}
     render() {
+        console.log(this.state.data);
+
         return (
             <div>
                 <div id={'statistics-box-left'}>
@@ -213,6 +228,7 @@ class Statistics extends Component {
                         <Plot
                             data={this.state.data}
                             layout={this.state.layout}
+
                         />
                     </div>
                     <div id={'statistics-slider-box'}>
