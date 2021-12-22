@@ -244,10 +244,17 @@ router.get('/filter', async (req, res) => {
         res.send(records.map((rec) => {
             let obj_rec = rec.toObject();
             for (let key in obj_rec) {
+
                 if (neo4j.isInt(obj_rec[key])) {
                     obj_rec[key] = obj_rec[key].toInt();
                 }
+                if(!isNaN(parseFloat(obj_rec[key]))) {
+                    if(/(-?\d+)\.\d+?\d{3,}$/.test(obj_rec[key])){
+                        obj_rec[key] = Number(obj_rec[key]).toFixed(4);
+                    }
+                }
             }
+
             return obj_rec;
         }));
     });
