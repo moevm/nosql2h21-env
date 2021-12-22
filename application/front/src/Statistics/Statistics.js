@@ -122,7 +122,7 @@ class Statistics extends Component {
 
             this.setState({data: data});
             this.setState({layout: { title: "Scatter chart" }});
-            console.log(this.state.data);
+
 
             this.props.block(false);
         })
@@ -144,12 +144,22 @@ class Statistics extends Component {
             }
         }
 
-        $.get('/stats/hist', {substance: substance, interval: interval}, (res) => {
-            let str_res = ""
-            for (const key in res) {
-                str_res += `<p>${key}: ${res[key]}</p>`;
-            }
-            $("#statistics-container").html(str_res);
+       $.get('/stats/hist', {substance: substance, interval: interval}, (res) => {
+                let x = [];
+                let y = [];
+                for (const key in res) {
+
+                    x.push(key);
+                    y.push(parseInt(res[key]));
+                }
+                let data = [{x: x, y: y, type: "bar",
+                    marker: {
+                        color: 'rgb(118,147,91)'}
+                }];
+
+
+                this.setState({data: data});
+                this.setState({layout: { title: "Histogram chart" }});
             this.props.block(false);
         });
     }
