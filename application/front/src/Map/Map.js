@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
-import MapComponent from './MapComponent/MapComponent';
+//import MapComponent from './MapComponent/MapComponent';
 import './Map.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+import Plotly from "plotly.js"
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plot = createPlotlyComponent(Plotly);
 
 
 class Map extends Component {
@@ -17,6 +20,32 @@ class Map extends Component {
                 SO2: false,
                 O3: false
             },
+            data: [{
+                type: 'scattergeo',
+                locationmode: 'USA-states',
+                hoverinfo: 'text',
+                lat: [37.5726028],
+                lon: [-85.1551411],
+                text: [1],
+
+            }],
+
+            layout: {
+                title: 'MAP',
+                showlegend: false,
+                geo: {
+                    scope: 'usa',
+                    projection: {
+                        type: 'albers usa'
+                    },
+                    showland: true,
+                    landcolor: 'rgb(140,162,121)',
+                    subunitwidth: 1,
+                    countrywidth: 1,
+                    subunitcolor: 'rgb(255,255,255)',
+                    countrycolor: 'rgb(255,255,255)'
+                },
+            }
         };
 
         this.years = {
@@ -43,6 +72,7 @@ class Map extends Component {
             for (const state of states) {
                 this.promises.push(
                     $.get('/geolocation', {address: state}, (res) => {
+
                         this.states_data[state] = res || {};
                         console.log(res);
                     })
@@ -76,19 +106,22 @@ class Map extends Component {
             }
         }
 
-        Promise.all(this.promises).then(() => {
+       Promise.all(this.promises).then(() => {
             $.get('/map', {substance: substance, interval: interval}, (res) => {
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
                     this.states_data[state].name = state;
                 }
+
+
+
                 /*let res_str = "";
                 for (const state in this.states_data) {
                     res_str += `<p>${state}: {latitude: ${this.states_data[state]['latitude']}, 
                             longitude: ${this.states_data[state]['longitude']}, mean: ${this.states_data[state]['mean']}}</p>`;
                 }
                 $("#map-container").html(res_str);
-                console.log(res_str);*/
+                console.log(res_str); */
 
                 this.props.block(false);
             });
@@ -119,12 +152,16 @@ class Map extends Component {
         this.fetch_data();
     }
 
+//<MapComponent states_data={Object.values(this.states_data)}/>
     render() {
         return (
             <div>
                 <div id={'map-box-left'}>
                     <div id={'map-container'}>
-                        <MapComponent states_data={Object.values(this.states_data)}/>
+                    <Plot
+                        data ={this.state.data}
+                        layout = {this.state.layout}
+                    />
                     </div>
                     <div id={'map-slider-box'}>
                         <MultiRangeSlider
