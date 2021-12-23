@@ -23,6 +23,7 @@ class Map extends Component {
             data: [{
                 type: 'scattergeo',
                 locationmode: 'USA-states',
+                mode:'markers',
                 hoverinfo: 'text',
                 lat: [37.5726028],
                 lon: [-85.1551411],
@@ -32,6 +33,7 @@ class Map extends Component {
 
             layout: {
                 title: 'MAP',
+                autosize: false,
                 showlegend: false,
                 geo: {
                     scope: 'usa',
@@ -43,8 +45,11 @@ class Map extends Component {
                     subunitwidth: 1,
                     countrywidth: 1,
                     subunitcolor: 'rgb(255,255,255)',
-                    countrycolor: 'rgb(255,255,255)'
+                    countrycolor: 'rgb(255,255,255)',
+                    width: 800,
+                    height: 450,
                 },
+
             }
         };
 
@@ -70,6 +75,7 @@ class Map extends Component {
 
         $.get('/states', {}, async (states) => {
             for (const state of states) {
+                //this.states_data[state] = {};
                 this.promises.push(
                     $.get('/geolocation', {address: state}, (res) => {
 
@@ -108,20 +114,35 @@ class Map extends Component {
 
        Promise.all(this.promises).then(() => {
             $.get('/map', {substance: substance, interval: interval}, (res) => {
+                let lat= [];
+                let lon= [];
+                let text= [];
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
                     this.states_data[state].name = state;
                 }
-
-
-
-                /*let res_str = "";
+                let str = "";
                 for (const state in this.states_data) {
-                    res_str += `<p>${state}: {latitude: ${this.states_data[state]['latitude']}, 
-                            longitude: ${this.states_data[state]['longitude']}, mean: ${this.states_data[state]['mean']}}</p>`;
+                    lat.push(this.states_data[state]['latitude']);
+                    lon.push(this.states_data[state]['longitude']);
+                    str = this.states_data[state]['name'];
+                    str += " - ";
+                    str += this.states_data[state]['mean'];
+                    text.push(str);
                 }
-                $("#map-container").html(res_str);
-                console.log(res_str); */
+
+                let data= [{
+                    type: 'scattergeo',
+                    locationmode: 'USA-states',
+                    mode:'markers',
+                    hoverinfo: 'text',
+                    lat: lat,
+                    lon: lon,
+                    text: text
+                }]
+
+                this.setState({data: data});
+
 
                 this.props.block(false);
             });
@@ -153,6 +174,12 @@ class Map extends Component {
     }
 
 //<MapComponent states_data={Object.values(this.states_data)}/>
+    //<div id={'map-container'}>
+    //                     <Plot
+    //                         data ={this.state.data}
+    //                         layout = {this.state.layout}
+    //                     />
+    //                     </div>
     render() {
         return (
             <div>
