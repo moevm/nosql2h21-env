@@ -28,11 +28,17 @@ class Map extends Component {
                 lat: [37.5726028],
                 lon: [-85.1551411],
                 text: [1],
-
+                marker: {
+                    size: [2],
+                    line: {
+                        color: 'black',
+                        width: 2
+                    },
+                }
             }],
 
             layout: {
-                title: 'MAP',
+                title: 'Polution Map',
                 autosize: false,
                 showlegend: false,
                 geo: {
@@ -117,6 +123,9 @@ class Map extends Component {
                 let lat= [];
                 let lon= [];
                 let text= [];
+                let size = [];
+                let color = [];
+                let s1 = 0;
                 for (const state in res) {
                     this.states_data[state].mean = res[state];
                     this.states_data[state].name = state;
@@ -126,11 +135,28 @@ class Map extends Component {
                     lat.push(this.states_data[state]['latitude']);
                     lon.push(this.states_data[state]['longitude']);
                     str = this.states_data[state]['name'];
-                    str += " - ";
-                    str += this.states_data[state]['mean'];
+                    str += ": ";
+                    str += Number(this.states_data[state]['mean']).toFixed(4);;
                     text.push(str);
+                    s1 = (Number(this.states_data[state]['mean']).toFixed(0));
+                    size.push(s1*2);
+                    if(s1 <= 1){
+                        color.push(50);
+                    }
+                    else if(s1 <= 5 ){
+                        color.push(40);
+                    }
+                    else if(s1 <= 10){
+                        color.push(20);
+                    }
+                    else if(s1 <= 15){
+                        color.push(10);
+                    }
+                    else if(s1 <= 20){
+                        color.push(5);
+                    }
+                    else {color.push(0)}
                 }
-
                 let data= [{
                     type: 'scattergeo',
                     locationmode: 'USA-states',
@@ -138,7 +164,20 @@ class Map extends Component {
                     hoverinfo: 'text',
                     lat: lat,
                     lon: lon,
-                    text: text
+                    text: text,
+                    marker: {
+                        size: size,
+                        color: color,
+                        cmin: 0,
+                        cmax: 25,
+                        colorscale: 'Greens',
+                        colorbar: {
+                            title: 'Polution level',
+                            //ticksuffix: '%',
+                            showticksuffix: 'last'
+                        },
+                        line: {width: 1, color: 'rgb(154,182,215)',},
+                    }
                 }]
 
                 this.setState({data: data});
@@ -173,13 +212,7 @@ class Map extends Component {
         this.fetch_data();
     }
 
-//<MapComponent states_data={Object.values(this.states_data)}/>
-    //<div id={'map-container'}>
-    //                     <Plot
-    //                         data ={this.state.data}
-    //                         layout = {this.state.layout}
-    //                     />
-    //                     </div>
+
     render() {
         return (
             <div>
