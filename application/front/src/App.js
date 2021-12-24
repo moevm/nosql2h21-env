@@ -22,6 +22,7 @@ class App extends Component {
     }
 
     componentDidMount() {
+        document.title = "Polution";
         this.block(true);
         $.get('/init', {}, (res) => {
             if (res) {

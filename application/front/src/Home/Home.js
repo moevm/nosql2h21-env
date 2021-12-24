@@ -19,13 +19,12 @@ class Home extends Component {
             download_URL: '',
             file_URL: '',
             file: '',
-            //status: ''
         };
 
         this.download = this.download.bind(this);
         this.upload = this.upload.bind(this);
         this.close_help_window = this.close_help_window.bind(this);
-        // this.open_file = this.open_file.bind(this);
+
     }
 
     close_help_window(){
@@ -156,5 +155,4 @@ class Home extends Component {
         return content;
   };
 }
-//<pre className={'status'}>{this.state.status}</pre>
 export default Home;

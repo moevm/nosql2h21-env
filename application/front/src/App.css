@@ -16,6 +16,7 @@ body {
 #house-frame {
   cursor: pointer;
   float: left;
+  margin-left: 20px;
 }
 
 #house {
@@ -28,8 +29,8 @@ body {
   height: 60px;
   padding-left: 20px;
   padding-right: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 35px;
+  margin-right: 5px;
   background-color: #514d4c;
   border: none;
   color: white;

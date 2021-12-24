@@ -245,7 +245,7 @@ class Statistics extends Component {
         this.setState({status: status});
     }
 
-    //config={this.state.conf}
+
     render() {
         console.log(this.state.data);
         let content;

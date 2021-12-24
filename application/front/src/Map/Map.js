@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
-//import MapComponent from './MapComponent/MapComponent';
 import './Map.css';
 import HelpWindow from "../HelpWindow";
 import $ from 'jquery';
@@ -93,7 +92,7 @@ class Map extends Component {
                     $.get('/geolocation', {address: state}, (res) => {
 
                         this.states_data[state] = res || {};
-                        console.log(res);
+
                     })
                 );
             }
@@ -189,10 +188,7 @@ class Map extends Component {
                             [0.75, 'rgb(248,135,6)'],
                             [1, 'rgb(252,0,0)']],
                         colorbar: {
-
                             title: 'Polution level',
-
-                            //showticksuffix: 'last'
                         },
                         line: {width: 1, color: 'rgb(154,182,215)',},
                     }

@@ -4,10 +4,6 @@
 }
 
 #map-box-right {
-    /*float: right;*/
-    /*display: flex;*/
-    /*padding: 100px 140px 100px 20px;*/
-    /*font-size: 1.2em;*/
     float: right;
     width: 20%;
     padding-top: 50px;
@@ -19,7 +15,7 @@
     height: 65vh;
     margin: 20px 2%;
     background-color: white;
-    border: 5px solid #593624;
+    border: 5px solid #528469;
     overflow: auto;
 }
 
