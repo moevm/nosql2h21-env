@@ -131,32 +131,36 @@ class Map extends Component {
                     this.states_data[state].name = state;
                 }
                 let str = "";
+                let min = 10000000; let max = 0; let mid = 0;
+
+                for (const state in this.states_data) {
+                    if( this.states_data[state]['mean'] < min) min = this.states_data[state]['mean'];
+                    if(this.states_data[state]['mean'] > max) max = this.states_data[state]['mean'];
+                }
+                mid = (max - min)/5;
+
                 for (const state in this.states_data) {
                     lat.push(this.states_data[state]['latitude']);
                     lon.push(this.states_data[state]['longitude']);
                     str = this.states_data[state]['name'];
                     str += ": ";
-                    str += Number(this.states_data[state]['mean']).toFixed(4);;
+                    str += Number(this.states_data[state]['mean']).toFixed(4);
                     text.push(str);
-                    s1 = (Number(this.states_data[state]['mean']).toFixed(0));
+                    s1 = this.states_data[state]['mean'];
+
+
+                    if(s1 <= min + mid)         color.push(0);
+                    else if(s1 <= min + 2*mid)  color.push(0.25);
+                    else if(s1 <= min + 3*mid)  color.push(0.50);
+                    else if(s1 <= min + 4*mid)  color.push(0.75);
+                    else                        color.push(1);
+
+
+                    s1 = (Number(s1).toFixed(0));
+                    if(s1 < 3) s1 = 3;
                     size.push(s1*2);
-                    if(s1 <= 1){
-                        color.push(50);
-                    }
-                    else if(s1 <= 5 ){
-                        color.push(40);
-                    }
-                    else if(s1 <= 10){
-                        color.push(20);
-                    }
-                    else if(s1 <= 15){
-                        color.push(10);
-                    }
-                    else if(s1 <= 20){
-                        color.push(5);
-                    }
-                    else {color.push(0)}
                 }
+
                 let data= [{
                     type: 'scattergeo',
                     locationmode: 'USA-states',
@@ -165,16 +169,20 @@ class Map extends Component {
                     lat: lat,
                     lon: lon,
                     text: text,
+                    reversescale:true,
                     marker: {
                         size: size,
                         color: color,
-                        cmin: 0,
-                        cmax: 25,
-                        colorscale: 'Greens',
+                        colorscale: [[0, 'rgb(203,229,243)'],
+                            [0.25, 'rgb(134,231,96)'],
+                            [0.50, 'rgb(255,233,0)'],
+                            [0.75, 'rgb(248,135,6)'],
+                            [1, 'rgb(252,0,0)']],
                         colorbar: {
+
                             title: 'Polution level',
-                            //ticksuffix: '%',
-                            showticksuffix: 'last'
+
+                            //showticksuffix: 'last'
                         },
                         line: {width: 1, color: 'rgb(154,182,215)',},
                     }
