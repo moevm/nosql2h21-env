@@ -7,6 +7,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import {columnsMap} from './columnsOptions'
 import './Table.css';
 import $ from "jquery"
+import HelpWindow from "../HelpWindow";
 
 
 const TABLE_PAGE_STATUS = {
@@ -14,7 +15,8 @@ const TABLE_PAGE_STATUS = {
     COLUMNS: 1,
     STATES: 2,
     YEARS: 3,
-    NEW_ROW: 4
+    NEW_ROW: 4,
+    HELP: 5,
 };
 
 
@@ -69,6 +71,7 @@ class Table extends Component {
         this.lines = 100;
 
         this.close_columns_window = this.close_columns_window.bind(this);
+        this.close_help_window = this.close_help_window.bind(this);
         this.close_states_window = this.close_states_window.bind(this);
         this.close_years_window = this.close_years_window.bind(this);
         this.close_new_row_window = this.close_new_row_window.bind(this);
@@ -179,6 +182,10 @@ class Table extends Component {
         })
     }
 
+    close_help_window(){
+        this.set_page_state(TABLE_PAGE_STATUS.DISPLAY);
+    }
+
     form_table_row(line, id) {
         return (
             <tr className={'table-line'} key={id}>
@@ -240,6 +247,10 @@ class Table extends Component {
                         <br/>
                         <button className={'table-box-right__button'}
                                 onClick={() => this.set_page_state(TABLE_PAGE_STATUS.NEW_ROW)}>Новая запись</button>
+                        <br/>
+                        <br/>
+                        <button className={'table-box-right__button'}
+                                onClick={() => this.set_page_state(TABLE_PAGE_STATUS.HELP)}>Помощь</button>
                     </div>
                 </div>
             );
@@ -255,6 +266,9 @@ class Table extends Component {
         }
         else if (this.state.status === TABLE_PAGE_STATUS.NEW_ROW) {
             content = <NewRowWindow callback={this.close_new_row_window}/>;
+        }
+        else if (this.state.status === TABLE_PAGE_STATUS.HELP) {
+            content = <HelpWindow input={"Table"} callback={this.close_help_window}/>;
         }
 
         return content;

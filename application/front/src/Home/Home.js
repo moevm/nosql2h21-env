@@ -1,23 +1,35 @@
 import React, { Component } from 'react'
 import './Home.css';
+import HelpWindow from "../HelpWindow";
 import $ from "jquery";
 
+const HOME_PAGE_STATUS = {
+    DISPLAY: 0,
+    HELP: 1,
+};
 
 class Home extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            status: HOME_PAGE_STATUS.DISPLAY,
+
             file_name: 'States.csv',
             download_URL: '',
             file_URL: '',
             file: '',
-            status: ''
+            //status: ''
         };
 
         this.download = this.download.bind(this);
         this.upload = this.upload.bind(this);
+        this.close_help_window = this.close_help_window.bind(this);
         // this.open_file = this.open_file.bind(this);
+    }
+
+    close_help_window(){
+        this.set_page_state(HOME_PAGE_STATUS.DISPLAY);
     }
 
     download () {
@@ -103,9 +115,16 @@ class Home extends Component {
         this.uploader.click();
     }
 
+    set_page_state(status) {
+        this.setState({status: status});
+    }
+
     render() {
 
-    return (
+        let content;
+
+        if (this.state.status === HOME_PAGE_STATUS.DISPLAY) {
+            content = (
         <div id={'home-box'}>
             <button className={'home-button'}
                     onClick={this.download}>Экспорт данных</button>
@@ -125,10 +144,17 @@ class Home extends Component {
                    onChange={evt => this.upload_csv(evt)}
                    ref={element => this.uploader = element}
             />
-            <pre className={'status'}>{this.state.status}</pre>
+            <br/>
+            <button className={'home-button'}
+                    onClick={() => this.set_page_state(HOME_PAGE_STATUS.HELP)}>Помощь</button>
+
         </div>
-    )
+    )}
+        else if (this.state.status === HOME_PAGE_STATUS.HELP) {
+            content = <HelpWindow input={"Home"} callback={this.close_help_window}/>;
+        }
+        return content;
   };
 }
-
+//<pre className={'status'}>{this.state.status}</pre>
 export default Home;

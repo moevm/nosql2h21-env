@@ -1,17 +1,25 @@
 import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
+import HelpWindow from "../HelpWindow";
 import './Statistics.css';
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
+
 
 import Plotly from "plotly.js"
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
 
+
 const chart_types = {
     dot: 'Точечная',
     histogram: 'Гистограмма'
+};
+
+const STATISTICS_PAGE_STATUS = {
+    DISPLAY: 0,
+    HELP: 1,
 };
 
 
@@ -20,6 +28,8 @@ class Statistics extends Component {
         super(props);
 
         this.state = {
+            status: STATISTICS_PAGE_STATUS.DISPLAY,
+
             substances: {
                 NO2: true,
                 CO: false,
@@ -54,6 +64,7 @@ class Statistics extends Component {
         };
 
         this.location = "WHOLE COUNTRY";
+        this.close_help_window = this.close_help_window.bind(this);
     }
 
     componentDidMount() {
@@ -86,6 +97,9 @@ class Statistics extends Component {
         })
     }
 
+    close_help_window(){
+        this.set_page_state(STATISTICS_PAGE_STATUS.DISPLAY);
+    }
 
     get_plots_data() {
         let interval = this.years
@@ -227,79 +241,99 @@ class Statistics extends Component {
         }
     }
 
+    set_page_state(status) {
+        this.setState({status: status});
+    }
+
     //config={this.state.conf}
     render() {
         console.log(this.state.data);
+        let content;
 
-        return (
-            <div>
-                <div id={'statistics-box-left'}>
-                    <div id={'statistics-container'}>
-                        <Plot
-                            data={this.state.data}
-                            layout={this.state.layout}
+        if (this.state.status === STATISTICS_PAGE_STATUS.DISPLAY) {
+            content = (
+                <div>
+                    <div id={'statistics-box-left'}>
+                        <div id={'statistics-container'}>
+                            <Plot
+                                data={this.state.data}
+                                layout={this.state.layout}
 
-                        />
+                            />
+                        </div>
+                        <div id={'statistics-slider-box'}>
+                            <MultiRangeSlider
+                                min={this.years.min}
+                                max={this.years.max}
+                                current_min={this.years.current_min}
+                                current_max={this.years.current_max}
+                                onChange={(min, max, mouseDown) => this.updateYears(min, max, mouseDown)}
+                            />
+                        </div>
                     </div>
-                    <div id={'statistics-slider-box'}>
-                        <MultiRangeSlider
-                            min={this.years.min}
-                            max={this.years.max}
-                            current_min={this.years.current_min}
-                            current_max={this.years.current_max}
-                            onChange={( min, max, mouseDown ) => this.updateYears(min, max, mouseDown)}
-                        />
-                    </div>
-                </div>
-                <div id={'statistics-box-right'}>
-                    <div className={'statistics-radio-box'}>
-                        {Object.keys(this.state.substances).map((name) => {
-                            return (
-                                <div className={'statistics-radio-wrapper'} key={name}>
-                                    <label>
-                                        <input type='radio' value={name} checked={this.state.substances[name]}
-                                               onChange={(e) => {this.updateSubstances(e)}}
-                                               className={'statistics-radio-input'}
-                                               name={'substance-radio'}/>
-                                        {name}
-                                    </label>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    <div id={'statistics-box-right'}>
 
-                    <div className={'statistics-radio-box'}>
-                        {Object.keys(this.state.types).map((name) => {
-                            return (
-                                <div className={'statistics-radio-wrapper'} key={name}>
-                                    <label>
-                                        <input type='radio' value={name} checked={this.state.types[name]}
-                                               onChange={(e) => {this.updateTypes(e)}}
-                                               className={'statistics-radio-input'}
-                                               name={'types-radio'}/>
-                                        {chart_types[name]}
-                                    </label>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    {this.state.types.dot &&
-                    <div className={'statistics-radio-box'}>
-                        <span>Выберите штат:</span>
-                        <select className={'statistics-select'}
-                                onChange={(e) => {this.updateLocation(e)}}>
-                            {this.state.states.map((state) => {
-                                return <option value={state} key={state}>{state}</option>
+                        <div className={'statistics-radio-box'}>
+                            <button className={'table-box-right__button'}
+                                    onClick={() => this.set_page_state(STATISTICS_PAGE_STATUS.HELP)}>Помощь</button>
+                            {Object.keys(this.state.substances).map((name) => {
+                                return (
+                                    <div className={'statistics-radio-wrapper'} key={name}>
+                                        <label>
+                                            <input type='radio' value={name} checked={this.state.substances[name]}
+                                                   onChange={(e) => {
+                                                       this.updateSubstances(e)
+                                                   }}
+                                                   className={'statistics-radio-input'}
+                                                   name={'substance-radio'}/>
+                                            {name}
+                                        </label>
+                                    </div>
+                                );
                             })}
-                        </select>
+                        </div>
+
+                        <div className={'statistics-radio-box'}>
+                            {Object.keys(this.state.types).map((name) => {
+                                return (
+                                    <div className={'statistics-radio-wrapper'} key={name}>
+                                        <label>
+                                            <input type='radio' value={name} checked={this.state.types[name]}
+                                                   onChange={(e) => {
+                                                       this.updateTypes(e)
+                                                   }}
+                                                   className={'statistics-radio-input'}
+                                                   name={'types-radio'}/>
+                                            {chart_types[name]}
+                                        </label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {this.state.types.dot &&
+                        <div className={'statistics-radio-box'}>
+                            <span>Выберите штат:</span>
+                            <select className={'statistics-select'}
+                                    onChange={(e) => {
+                                        this.updateLocation(e)
+                                    }}>
+                                {this.state.states.map((state) => {
+                                    return <option value={state} key={state}>{state}</option>
+                                })}
+                            </select>
+                        </div>
+                        }
                     </div>
-                    }
-
                 </div>
-            </div>
 
-        );
+            );
+        }
+        else if (this.state.status === STATISTICS_PAGE_STATUS.HELP) {
+            content = <HelpWindow input={"Statistics"} callback={this.close_help_window}/>;
+        }
+        return content;
     };
+
 }
 
 export default Statistics;

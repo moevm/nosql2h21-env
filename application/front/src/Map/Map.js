@@ -2,18 +2,24 @@ import React, { Component } from 'react'
 import MultiRangeSlider from '../MultiRangeSlider';
 //import MapComponent from './MapComponent/MapComponent';
 import './Map.css';
+import HelpWindow from "../HelpWindow";
 import $ from 'jquery';
 import { debounce } from 'throttle-debounce'
 import Plotly from "plotly.js"
 import createPlotlyComponent from 'react-plotly.js/factory';
 const Plot = createPlotlyComponent(Plotly);
 
+const MAP_PAGE_STATUS = {
+    DISPLAY: 0,
+    HELP: 1,
+};
 
 class Map extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            status: MAP_PAGE_STATUS.DISPLAY,
             substances: {
                 NO2: true,
                 CO: false,
@@ -69,6 +75,7 @@ class Map extends Component {
         this.promises = [];
 
         this.states_data = {};
+        this.close_help_window = this.close_help_window.bind(this);
     }
 
     componentDidMount() {
@@ -96,6 +103,9 @@ class Map extends Component {
         //$("#map-container").html('LOADING...');
     }
 
+    close_help_window(){
+        this.set_page_state(MAP_PAGE_STATUS.DISPLAY);
+    }
 
     fetch_data =  debounce(500, false, () => {
         this.props.block(true);
@@ -220,46 +230,61 @@ class Map extends Component {
         this.fetch_data();
     }
 
+    set_page_state(status) {
+        this.setState({status: status});
+    }
+
 
     render() {
-        return (
-            <div>
-                <div id={'map-box-left'}>
-                    <div id={'map-container'}>
-                    <Plot
-                        data ={this.state.data}
-                        layout = {this.state.layout}
-                    />
+        let content;
+
+        if (this.state.status === MAP_PAGE_STATUS.DISPLAY) {
+            content = (
+                <div>
+                    <div id={'map-box-left'}>
+                        <div id={'map-container'}>
+                            <Plot
+                                data ={this.state.data}
+                                layout = {this.state.layout}
+                            />
+                        </div>
+                        <div id={'map-slider-box'}>
+                            <MultiRangeSlider
+                                min={this.years.min}
+                                max={this.years.max}
+                                current_min={this.years.current_min}
+                                current_max={this.years.current_max}
+                                onChange={( min, max, mouseDown ) => this.updateYears(min, max, mouseDown)}
+                            />
+                        </div>
                     </div>
-                    <div id={'map-slider-box'}>
-                        <MultiRangeSlider
-                            min={this.years.min}
-                            max={this.years.max}
-                            current_min={this.years.current_min}
-                            current_max={this.years.current_max}
-                            onChange={( min, max, mouseDown ) => this.updateYears(min, max, mouseDown)}
-                        />
+                    <div id={'map-box-right'}>
+                        <button className={'table-box-right__button'}
+                                onClick={() => this.set_page_state(MAP_PAGE_STATUS.HELP)}>Помощь</button>
+                        <div id={'map-radio-box'}>
+                            {Object.keys(this.state.substances).map((name) => {
+                                return (
+                                    <div className={'map-radio-wrapper'} key={name}>
+                                        <label>
+                                            <input type='radio' value={name} checked={this.state.substances[name]}
+                                                   onChange={(e) => {this.updateSubstances(e)}}
+                                                   className={'map-radio-input'}
+                                                   name={'substance-radio'}/>
+                                            {name}
+                                        </label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
                     </div>
                 </div>
-                <div id={'map-box-right'}>
-                    <div id={'map-radio-box'}>
-                        {Object.keys(this.state.substances).map((name) => {
-                            return (
-                                <div className={'map-radio-wrapper'} key={name}>
-                                    <label>
-                                        <input type='radio' value={name} checked={this.state.substances[name]}
-                                               onChange={(e) => {this.updateSubstances(e)}}
-                                               className={'map-radio-input'}
-                                               name={'substance-radio'}/>
-                                        {name}
-                                    </label>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-        );
+            );
+        }
+        else if (this.state.status === MAP_PAGE_STATUS.HELP) {
+            content = <HelpWindow input={"Map"} callback={this.close_help_window}/>;
+        }
+        return content;
     };
 }
 

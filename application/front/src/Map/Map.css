@@ -1,6 +1,6 @@
 #map-box-left {
     float: left;
-    width: 80%;
+    width: 75%;
 }
 
 #map-box-right {
@@ -9,7 +9,7 @@
     /*padding: 100px 140px 100px 20px;*/
     /*font-size: 1.2em;*/
     float: right;
-    width: 15%;
+    width: 20%;
     padding-top: 50px;
     font-size: 1.2em;
 }
@@ -29,4 +29,5 @@
 
 .map-radio-wrapper {
     margin: 10px auto;
+
 }
